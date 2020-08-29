@@ -181,6 +181,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 	case "/echo_broadcast":
 		msg := slack.MsgOptionText(sl.Text, false)
 		groups, err := api.GetGroups(false)
@@ -189,6 +190,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, group := range groups {
+			fmt.Printf("Post message to : %v\n", group.Name)
 			_, _, err = api.PostMessage(group.ID, msg)
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
