@@ -159,3 +159,44 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+//CommandsHandler is endpoint fot `/events`
+func CommandsHandler(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	body := buf.String()
+
+	verifytoken := os.Getenv("SLACK_VERIFY_TOKEN")
+	evt, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionVerifyToken(&slackevents.TokenComparator{VerificationToken: verifytoken}))
+	if err != nil {
+		fmt.Println("err:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if evt.Type == slackevents.URLVerification {
+		var r *slackevents.ChallengeResponse
+		err := json.Unmarshal([]byte(body), &r)
+		if err != nil {
+			fmt.Println("err:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text")
+		w.Write([]byte(r.Challenge))
+	}
+
+	if evt.Type == slackevents.CallbackEvent {
+		switch evt := evt.InnerEvent.Data.(type) {
+		case *slackevents.AppMentionEvent:
+			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("I'm so tired, hello.", false))
+			if err != nil {
+				fmt.Println("err:", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+}
