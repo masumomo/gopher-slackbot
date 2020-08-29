@@ -167,7 +167,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	body := buf.String()
-
+	fmt.Pringln("body;", body)
 	verifytoken := os.Getenv("SLACK_VERIFY_TOKEN")
 	evt, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionVerifyToken(&slackevents.TokenComparator{VerificationToken: verifytoken}))
 	if err != nil {
