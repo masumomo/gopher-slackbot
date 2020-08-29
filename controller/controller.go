@@ -24,6 +24,7 @@ func init() {
 	api = slack.New(token)
 }
 
+//EventsHandler is endpoint fot `/events`
 func EventsHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
@@ -64,6 +65,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//InteractionsHandler is endpoint fot `/interactions`
 func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var payload slack.InteractionCallback
