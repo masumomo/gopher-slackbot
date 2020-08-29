@@ -2,3 +2,4 @@ bin/gopher-slackbot
 .env
 .docker_build/
 bin/
+.vscode/*
