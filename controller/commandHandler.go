@@ -196,7 +196,6 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
 			}
 		}
 
