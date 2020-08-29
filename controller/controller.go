@@ -165,6 +165,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 	sl, err := slack.SlashCommandParse(r)
+	fmt.Println("sl", sl)
 	if err != nil {
 		fmt.Printf("Could not parse slash command JSON: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
