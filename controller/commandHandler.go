@@ -174,15 +174,28 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch sl.Command {
 	case "/echo":
-		params := &slack.Msg{Text: sl.Text}
-		b, err := json.Marshal(params)
+		msg := slack.MsgOptionText(sl.Text, false)
+		_, _, err = api.PostMessage(sl.ChannelID, msg)
 		if err != nil {
-			fmt.Printf("Could not parse param JSON: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Printf("Could not post message: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
+	case "/echo_broadcast":
+		msg := slack.MsgOptionText(sl.Text, false)
+		groups, err := api.GetGroups(false)
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return
+		}
+		for _, group := range groups {
+			_, _, err = api.PostMessage(group.ID, msg)
+			if err != nil {
+				fmt.Printf("Could not post message: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
 
 	case "/hello":
 		params := &slack.Msg{Text: "I'm so tired, hello..."}
