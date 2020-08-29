@@ -193,7 +193,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 		for _, channel := range channels {
 			fmt.Printf("Post message to : %v\n", channel.Name)
 			_, _, err = api.PostMessage(channel.ID, msg)
-			if err != nil {
+			if err != nil && err.Error() != "not_in_channel" { // Ignore only this err
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
