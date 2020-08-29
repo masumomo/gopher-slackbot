@@ -1,7 +1,7 @@
 
 # Gopher slack bot
 
-Slack bot Go app, which be deployed to Heroku.
+Go Slack bot app, which be deployed to Heroku.
 
 ## Prepare Locally
 

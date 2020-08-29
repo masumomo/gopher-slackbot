@@ -57,7 +57,6 @@ func eventsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "text")
 		w.Write([]byte(r.Challenge))
-		fmt.Println("r.Challenge:", r.Challenge)
 	}
 
 	if evt.Type == slackevents.CallbackEvent {
