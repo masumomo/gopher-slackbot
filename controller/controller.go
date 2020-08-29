@@ -11,11 +11,12 @@ import (
 	"github.com/slack-go/slack"
 )
 
-var api *slack.Client
-
-var token string
-var verifytoken string
-var golangChannelID string
+var (
+	api             *slack.Client
+	token           string
+	verifytoken     string
+	golangChannelID string
+)
 
 func init() {
 	token = os.Getenv("SLACK_BOT_TOKEN")
@@ -160,7 +161,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//CommandsHandler is endpoint fot `/events`
+//CommandsHandler is endpoint fot `/commands`
 func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
@@ -168,35 +169,33 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	body := buf.String()
 	fmt.Println("body;", body)
-	verifytoken := os.Getenv("SLACK_VERIFY_TOKEN")
-	evt, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionVerifyToken(&slackevents.TokenComparator{VerificationToken: verifytoken}))
+
+	sl, err := slack.SlashCommandParse(r)
 	if err != nil {
-		fmt.Println("err:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if evt.Type == slackevents.URLVerification {
-		var r *slackevents.ChallengeResponse
-		err := json.Unmarshal([]byte(body), &r)
+	switch sl.Command {
+	case "/echo":
+		params := &slack.Msg{Text: sl.Text}
+		b, err := json.Marshal(params)
 		if err != nil {
-			fmt.Println("err:", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "text")
-		w.Write([]byte(r.Challenge))
-	}
 
-	if evt.Type == slackevents.CallbackEvent {
-		switch evt := evt.InnerEvent.Data.(type) {
-		case *slackevents.AppMentionEvent:
-			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("I'm so tired, hello.", false))
-			if err != nil {
-				fmt.Println("err:", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(b)
+	case "/hello":
+		_, _, err := api.PostMessage(sl.ChannelID, slack.MsgOptionText("I'm so tired, hello "+sl.UserName+"...", false))
+		if err != nil {
+			fmt.Println("err:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 }
