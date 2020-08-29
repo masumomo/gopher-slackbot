@@ -18,7 +18,6 @@ go build -o bin/gopher-slackbot -v . # or `go build -o bin/gopher-slackbot.exe -
 You have to set up these env valuable below
 - SLACK_BOT_TOKEN
 - SLACK_VERIFY_TOKEN
-- CHANNEL_ID
 
 ### Deploy
 

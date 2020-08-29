@@ -12,16 +12,14 @@ import (
 )
 
 var (
-	api             *slack.Client
-	token           string
-	verifytoken     string
-	golangChannelID string
+	api         *slack.Client
+	token       string
+	verifytoken string
 )
 
 func init() {
 	token = os.Getenv("SLACK_BOT_TOKEN")
 	verifytoken = os.Getenv("SLACK_VERIFY_TOKEN")
-	golangChannelID = os.Getenv("CHANNEL_ID")
 	api = slack.New(token)
 }
 
@@ -119,7 +117,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		message := slack.MsgOptionAttachments(attachment)
-		channelID, timestamp, err := api.PostMessage(golangChannelID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
+		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 		}
@@ -150,7 +148,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		_, _, err = api.PostMessage(golangChannelID, msg)
+		_, _, err = api.PostMessage(payload.Channel.ID, msg)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
