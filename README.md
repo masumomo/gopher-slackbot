@@ -38,4 +38,5 @@ heroku logs -tail
 
 - `/events`
 - `/interactions`
+- `/commands`
 
