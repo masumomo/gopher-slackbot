@@ -181,17 +181,18 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
+
 	case "/hello":
-		_, _, err := api.PostMessage(sl.ChannelID, slack.MsgOptionText("I'm so tired, hello "+sl.UserName+"...", false))
+		_, _, err := api.PostMessage(sl.ChannelID, slack.MsgOptionText("I'm so tired, hello...", false))
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	default:
+		fmt.Printf("This command is not supported : %v\n", sl.Command)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
