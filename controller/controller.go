@@ -36,7 +36,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 	verifytoken := os.Getenv("SLACK_VERIFY_TOKEN")
 	evt, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionVerifyToken(&slackevents.TokenComparator{VerificationToken: verifytoken}))
 	if err != nil {
-		fmt.Println("err:", err)
+		fmt.Printf("Could not parse event JSON: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -45,7 +45,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 		var r *slackevents.ChallengeResponse
 		err := json.Unmarshal([]byte(body), &r)
 		if err != nil {
-			fmt.Println("err:", err)
+			fmt.Printf("Could not parse event response JSON: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -58,7 +58,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 		case *slackevents.AppMentionEvent:
 			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
 			if err != nil {
-				fmt.Println("err:", err)
+				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -121,7 +121,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 		message := slack.MsgOptionAttachments(attachment)
 		channelID, timestamp, err := api.PostMessage(golangChannelID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
-			fmt.Printf("Could not send message: %v\n", err)
+			fmt.Printf("Could not post message: %v\n", err)
 		}
 
 		fmt.Printf("Message with buttons successfully sent to channel %s at %s\n", channelID, timestamp)
@@ -152,7 +152,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, _, err = api.PostMessage(golangChannelID, msg)
 		if err != nil {
-			fmt.Println("err:", err)
+			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -164,14 +164,9 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 //CommandsHandler is endpoint fot `/commands`
 func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 
-	defer r.Body.Close()
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(r.Body)
-	body := buf.String()
-	fmt.Println("body;", body)
-
 	sl, err := slack.SlashCommandParse(r)
 	if err != nil {
+		fmt.Printf("Could not parse slash command JSON: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -181,6 +176,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 		params := &slack.Msg{Text: sl.Text}
 		b, err := json.Marshal(params)
 		if err != nil {
+			fmt.Printf("Could not parse param JSON: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -190,7 +186,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 	case "/hello":
 		_, _, err := api.PostMessage(sl.ChannelID, slack.MsgOptionText("I'm so tired, hello "+sl.UserName+"...", false))
 		if err != nil {
-			fmt.Println("err:", err)
+			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
