@@ -1,0 +1,11 @@
+{
+  "name": "Gopher slack bot app",
+  "description": "Slack Bot app using Golang",
+  "keywords": [
+    "go",
+    "slack",
+    "bot"
+  ],
+  "website": "http://github.com/masumomo/gopher-slackbot",
+  "repository": "http://github.com/masumomo/gopher-slackbot"
+}
