@@ -186,7 +186,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 		msg := slack.MsgOptionText(sl.Text, false)
 		groups, err := api.GetGroups(false)
 		if err != nil {
-			fmt.Printf("%s\n", err)
+			fmt.Printf("GetGroups %s\n", err)
 			return
 		}
 		for _, group := range groups {
