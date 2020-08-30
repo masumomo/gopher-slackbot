@@ -248,12 +248,12 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Could not convert html to markdown : %v\n", err)
 	}
 
-	attachment := slack.Attachment{
-		Color:    "good",
-		Title:    mailFromZapier.Subject + " by " + mailFromZapier.FromName,
-		Fallback: "You successfully posted by Incoming Webhook URL!",
-		Text:     mailFromZapier.BodyMarkdown,
-	}
+	// attachment := slack.Attachment{
+	// 	Color:    "good",
+	// 	Title:    mailFromZapier.Subject + " by " + mailFromZapier.FromName,
+	// 	Fallback: "You successfully posted by Incoming Webhook URL!",
+	// 	Text:     mailFromZapier.BodyMarkdown,
+	// }
 	// msg := slack.WebhookMessage{
 	// 	Attachments: []slack.Attachment{attachment},
 	// }
