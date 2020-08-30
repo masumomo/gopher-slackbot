@@ -263,7 +263,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	fmt.Printf("Message successfully sent to channel :%v\n", mailFromZapier.Subject)
-	fmt.Printf("Markdown message: ", mailFromZapier.BodyMarkdown)
+	fmt.Printf("Markdown message: %v\n", mailFromZapier.BodyMarkdown)
 }
 
 //WebHookTestHandler is endpoint for `/webhook`
