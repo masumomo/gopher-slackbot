@@ -241,10 +241,10 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	title := strings.SplitN(payload, "\n", 2)[0]
 	html := strings.SplitN(payload, "\n", 2)[1]
 
-	markdown, err := converter.ConvertString(html)
-	if err != nil {
-		fmt.Printf("Could not convert html to markdown : %v\n", err)
-	}
+	// markdown, err := converter.ConvertString(html)
+	// if err != nil {
+	// 	fmt.Printf("Could not convert html to markdown : %v\n", err)
+	// }
 	// fmt.Println("******md ->", markdown)
 
 	// attachment := slack.Attachment{
