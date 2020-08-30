@@ -223,24 +223,15 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 
 	type MailFromZapier struct {
-		Subject  string `json:"subject"`
-		FromName string `json:"from__name"`
-		BodyHTML string `json:"body_html"`
+		Subject      string `json:"subject"`
+		FromName     string `json:"from__name"`
+		BodyHTML     string `json:"body_html"`
+		BodyMarkdown string
 	}
-	// This webhook can receive Title and Body.
-	// Title should be one line,
-	// Body should be seccond and subsequent lines
-	// Here is a example
-	/**
-	{{mail subject}} by {{from name}}
-	{{body_html}}
-	**/
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	payload := buf.Bytes()
-	// payload, err := url.QueryUnescape(buf.String())
-	// fmt.Println(payload)
 
 	var mailFromZapier MailFromZapier
 	err := json.Unmarshal(payload, &mailFromZapier)
@@ -248,26 +239,21 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not parse json : %v\n", err)
 	}
-	fmt.Println("Subject:", mailFromZapier.Subject)
-	fmt.Println("FromName:", mailFromZapier.FromName)
-	// if err != nil {
-	// 	fmt.Printf("Could not decode html : %v\n", err)
-	// }
-	// title := strings.SplitN(payload, "\n", 2)[0]
-	// html := strings.SplitN(payload, "\n", 2)[1]
+	if err != nil {
+		fmt.Printf("Could not decode html : %v\n", err)
+	}
 
-	// markdown, err := converter.ConvertString(html)
-	// if err != nil {
-	// 	fmt.Printf("Could not convert html to markdown : %v\n", err)
-	// }
-	// fmt.Println("******md ->", markdown)
+	mailFromZapier.BodyMarkdown, err = converter.ConvertString(mailFromZapier.BodyHTML)
+	if err != nil {
+		fmt.Printf("Could not convert html to markdown : %v\n", err)
+	}
 
-	// attachment := slack.Attachment{
-	// 	Color:    "good",
-	// 	Title:    title,
-	// 	Fallback: "You successfully posted by Incoming Webhook URL!",
-	// 	Text:     markdown,
-	// }
+	attachment := slack.Attachment{
+		Color:    "good",
+		Title:    mailFromZapier.Subject + " by " + mailFromZapier.FromName,
+		Fallback: "You successfully posted by Incoming Webhook URL!",
+		Text:     mailFromZapier.BodyMarkdown,
+	}
 	// msg := slack.WebhookMessage{
 	// 	Attachments: []slack.Attachment{attachment},
 	// }
@@ -276,8 +262,8 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Println(err)
 	// }
 
-	// fmt.Printf("markdown is this :%v\n", markdown)
-	// fmt.Printf("Message successfully sent to channel :%v\n", title)
+	fmt.Printf("Message successfully sent to channel :%v\n", mailFromZapier.Subject)
+	fmt.Printf("Markdown message: ", mailFromZapier.BodyMarkdown)
 }
 
 //WebHookTestHandler is endpoint for `/webhook`
