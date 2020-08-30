@@ -235,6 +235,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	payload, err := url.QueryUnescape(buf.String())
+	fmt.Println(payload)
 	if err != nil {
 		fmt.Printf("Could not decode html : %v\n", err)
 	}
