@@ -224,10 +224,11 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 //WebHookTriggeredByMailHandler is endpoint for `/events`
 func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	// This webhook can receive Title and Body.
-	// Title and Body are sapalated by empty line like this example below
+	// Title should be one line,
+	// Body should be seccond and subsequent lines
+	// Here is a example
 	/**
 	{{mail subject}} by {{from name}}
-
 	{{body_html}}
 	**/
 	defer r.Body.Close()
@@ -237,8 +238,8 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not decode html : %v\n", err)
 	}
-	title := strings.SplitN(payload, "\n\n", 2)[0]
-	html := strings.SplitN(payload, "\n\n", 2)[1]
+	title := strings.SplitN(payload, "\n", 2)[0]
+	html := strings.SplitN(payload, "\n", 2)[1]
 
 	markdown, err := converter.ConvertString(html)
 	if err != nil {
@@ -260,7 +261,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Println(err)
 	// }
 
-	fmt.Printf("Message successfully sent to channel %v !\n", attachment)
+	fmt.Printf("Message successfully sent to channel :%v\n", title)
 }
 
 //WebHookTestHandler is endpoint for `/webhook`
