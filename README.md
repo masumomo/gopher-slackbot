@@ -38,4 +38,7 @@ heroku logs -tail
 - `/events`
 - `/interactions`
 - `/commands`
+- `/webhook-triggered-by-mail`
+- `/webhook`
+
 
