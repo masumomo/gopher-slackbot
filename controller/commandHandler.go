@@ -221,6 +221,12 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 //WebHookTriggeredByMailHandler is endpoint for `/events`
 func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
+
+	type MailFromZapier struct {
+		Subject  string `json:"subject"`
+		FromName string `json:"from__name"`
+		BodyHTML string `json:"body_html"`
+	}
 	// This webhook can receive Title and Body.
 	// Title should be one line,
 	// Body should be seccond and subsequent lines
@@ -235,6 +241,15 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	payload := buf.String()
 	// payload, err := url.QueryUnescape(buf.String())
 	fmt.Println(payload)
+
+	var mailFromZapier MailFromZapier
+	err := json.Unmarshal(payload, &mailFromZapier{})
+
+	if err != nil {
+		fmt.Printf("Could not parse json : %v\n", err)
+	}
+	fmt.Println("Subject:", mailFromZapier.Subject)
+	fmt.Println("FromName:", mailFromZapier.FromName)
 	// if err != nil {
 	// 	fmt.Printf("Could not decode html : %v\n", err)
 	// }
