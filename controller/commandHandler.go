@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
@@ -238,12 +237,12 @@ func GolangWeeklyHookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("md ->", markdown)
 
-	resp, err := http.Post(webHookUrl, "application/json", strings.NewReader(markdown))
-	if err != nil {
-		fmt.Printf("Could not post to  slash : %v\n", err)
-	}
+	// resp, err := http.Post(webHookUrl, "application/json", strings.NewReader(markdown))
+	// if err != nil {
+	// 	fmt.Printf("Could not post to  slash : %v\n", err)
+	// }
 
-	fmt.Printf("Message successfully sent to channel! %v\n", resp)
+	// fmt.Printf("Message successfully sent to channel! %v\n", resp)
 }
 
 //WebHookTestHandler is endpoint for `/webhook`
