@@ -13,6 +13,7 @@ func main() {
 	http.HandleFunc("/interactions", controller.InteractionsHandler)
 	http.HandleFunc("/commands", controller.CommandsHandler)
 	http.HandleFunc("/golang-weekly-hook", controller.GolangWeeklyHookHandler)
+	http.HandleFunc("/webhook", controller.WebhookTestHandler)
 	fmt.Println("[INFO] Server listening")
 	port := os.Getenv("PORT")
 	http.ListenAndServe(":"+port, nil)
