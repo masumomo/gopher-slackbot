@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
-	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/nlopes/slack/slackevents"
@@ -233,36 +231,37 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Could not decode html : %v\n", err)
 	}
 
-	fmt.Println("*****html ->", htmlBody)
 	markdown, err := converter.ConvertString(htmlBody)
 	if err != nil {
 		fmt.Printf("Could not convert html to markdown : %v\n", err)
-		fmt.Printf("Could not convert html to markdown : %v\n", markdown)
 	}
 	fmt.Println("******md ->", markdown)
 
-	// resp, err := http.Post(webHookUrl, "application/json", strings.NewReader(markdown))
-	// if err != nil {
-	// 	fmt.Printf("Could not post to  slash : %v\n", err)
-	// }
+	attachment := slack.Attachment{
+		Color:    "good",
+		Title:    "test",
+		Fallback: "You successfully posted by Incoming Webhook URL!",
+		Text:     "All text in Slack uses the same system of escaping: chat messages, direct messages, file comments, etc. :smile:\nSee <https://api.slack.com/docs/message-formatting#linking_to_channels_and_users>",
+	}
+	msg := slack.WebhookMessage{
+		Attachments: []slack.Attachment{attachment},
+	}
+	err = slack.PostWebhook(webHookUrl, &msg)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	// fmt.Printf("Message successfully sent to channel! %v\n", resp)
+	fmt.Printf("Message successfully sent to channel!\n")
 }
 
 //WebHookTestHandler is endpoint for `/webhook`
 func WebHookTestHandler(w http.ResponseWriter, r *http.Request) {
 
 	attachment := slack.Attachment{
-		Color:         "good",
-		Fallback:      "You successfully posted by Incoming Webhook URL!",
-		AuthorName:    "slack-go/slack",
-		AuthorSubname: "github.com",
-		AuthorLink:    "https://github.com/slack-go/slack",
-		AuthorIcon:    "https://avatars2.githubusercontent.com/u/652790",
-		Text:          "<!channel> All text in Slack uses the same system of escaping: chat messages, direct messages, file comments, etc. :smile:\nSee <https://api.slack.com/docs/message-formatting#linking_to_channels_and_users>",
-		Footer:        "slack api",
-		FooterIcon:    "https://platform.slack-edge.com/img/default_application_icon.png",
-		Ts:            json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
+		Color:      "good",
+		Title:      "Test webhook",
+		Fallback:   "You successfully posted by Incoming Webhook URL!",
+		MarkdownIn: []string{"This is a sentence with some `inline *code*` in it. :smile:\nSee <http://www.foo.com|This message *is* a link>"},
 	}
 	msg := slack.WebhookMessage{
 		Attachments: []slack.Attachment{attachment},
