@@ -4,26 +4,33 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"strings"
 
+	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/nlopes/slack/slackevents"
 	"github.com/slack-go/slack"
 )
 
 var (
 	api         *slack.Client
+	converter   *md.Converter
+	webHookUrl  string
 	token       string
 	verifytoken string
 )
 
 func init() {
+	converter = md.NewConverter("", true, nil)
 	token = os.Getenv("SLACK_BOT_TOKEN")
 	verifytoken = os.Getenv("SLACK_VERIFY_TOKEN")
+	webHookUrl = os.Getenv("WEB_HOOK_URL")
 	api = slack.New(token)
 }
 
-//EventsHandler is endpoint fot `/events`
+//EventsHandler is endpoint for `/events`
 func EventsHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
@@ -64,7 +71,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//InteractionsHandler is endpoint fot `/interactions`
+//InteractionsHandler is endpoint for `/interactions`
 func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var payload slack.InteractionCallback
@@ -159,7 +166,7 @@ func InteractionsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//CommandsHandler is endpoint fot `/commands`
+//CommandsHandler is endpoint for `/commands`
 func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 	sl, err := slack.SlashCommandParse(r)
@@ -212,4 +219,27 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+//GolangWeeklyHookHandler is endpoint for `/events`
+func GolangWeeklyHookHandler(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	htmlBody := buf.String()
+
+	fmt.Println("html ->", htmlBody)
+	markdown, err := converter.ConvertString(htmlBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("md ->", markdown)
+
+	resp, err := http.Post(webHookUrl, "application/json", strings.NewReader(markdown))
+	if err != nil {
+		fmt.Printf("Could not post to  slash : %v\n", err)
+	}
+
+	fmt.Printf("Message successfully sent to channel! response: %v\n", resp)
 }
