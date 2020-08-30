@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -227,7 +228,10 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
-	htmlBody := buf.String()
+	htmlBody, err := url.QueryUnescape(buf.String())
+	if err != nil {
+		fmt.Printf("Could not decode html : %v\n", err)
+	}
 
 	fmt.Println("*****html ->", htmlBody)
 	markdown, err := converter.ConvertString(htmlBody)
@@ -235,7 +239,7 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Could not convert html to markdown : %v\n", err)
 		fmt.Printf("Could not convert html to markdown : %v\n", markdown)
 	}
-	fmt.Println("******md ->")
+	fmt.Println("******md ->", markdown)
 
 	// resp, err := http.Post(webHookUrl, "application/json", strings.NewReader(markdown))
 	// if err != nil {
