@@ -235,23 +235,23 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not convert html to markdown : %v\n", err)
 	}
-	fmt.Println("******md ->", markdown)
+	// fmt.Println("******md ->", markdown)
 
 	attachment := slack.Attachment{
 		Color:    "good",
 		Title:    "test",
 		Fallback: "You successfully posted by Incoming Webhook URL!",
-		Text:     "All text in Slack uses the same system of escaping: chat messages, direct messages, file comments, etc. :smile:\nSee <https://api.slack.com/docs/message-formatting#linking_to_channels_and_users>",
+		Text:     markdown,
 	}
-	msg := slack.WebhookMessage{
-		Attachments: []slack.Attachment{attachment},
-	}
-	err = slack.PostWebhook(webHookUrl, &msg)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// msg := slack.WebhookMessage{
+	// 	Attachments: []slack.Attachment{attachment},
+	// }
+	// err = slack.PostWebhook(webHookUrl, &msg)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	fmt.Printf("Message successfully sent to channel!\n")
+	fmt.Printf("Message successfully sent to channel %v !\n", attachment)
 }
 
 //WebHookTestHandler is endpoint for `/webhook`
@@ -262,7 +262,6 @@ func WebHookTestHandler(w http.ResponseWriter, r *http.Request) {
 		Title:    "Test webhook",
 		Fallback: "You successfully posted by Incoming Webhook URL!",
 		Text:     "This is a sentence with some `inline *code*` in it. :smile:\nSee <http://www.foo.com|This message *is* a link>",
-		// MarkdownIn: []string{"This is a sentence with some `inline *code*` in it. :smile:\nSee <http://www.foo.com|This message *is* a link>"},
 	}
 	msg := slack.WebhookMessage{
 		Attachments: []slack.Attachment{attachment},
