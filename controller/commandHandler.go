@@ -231,7 +231,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 		BodyMarkdown string
 	}
 
-	webHookURL := r.Header.Values("web_hook_url")[0]
+	webHookURL := r.Header.Get("web_hook_url")
 
 	if webHookURL == "" {
 		webHookURL = os.Getenv("WEB_HOOK_URL")
