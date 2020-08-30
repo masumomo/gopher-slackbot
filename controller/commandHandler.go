@@ -239,7 +239,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Could not decode html : %v\n", err)
 	}
 	title := strings.SplitN(payload, "\n", 2)[0]
-	html := strings.SplitN(payload, "\n", 2)[1]
+	// html := strings.SplitN(payload, "\n", 2)[1]
 
 	// markdown, err := converter.ConvertString(html)
 	// if err != nil {
