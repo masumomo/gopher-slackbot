@@ -229,7 +229,7 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	htmlBody := buf.String()
 
-	fmt.Println("*****html ->")
+	fmt.Println("*****html ->", htmlBody)
 	markdown, err := converter.ConvertString(htmlBody)
 	if err != nil {
 		fmt.Printf("Could not convert html to markdown : %v\n", err)
