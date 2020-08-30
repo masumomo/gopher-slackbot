@@ -238,12 +238,12 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
-	payload := buf.String()
+	payload := buf.Bytes()
 	// payload, err := url.QueryUnescape(buf.String())
-	fmt.Println(payload)
+	// fmt.Println(payload)
 
 	var mailFromZapier MailFromZapier
-	err := json.Unmarshal(payload, &mailFromZapier{})
+	err := json.Unmarshal(payload, &mailFromZapier)
 
 	if err != nil {
 		fmt.Printf("Could not parse json : %v\n", err)
