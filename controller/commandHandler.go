@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -222,20 +221,20 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//GolangWeeklyHookHandler is endpoint for `/events`
-func GolangWeeklyHookHandler(w http.ResponseWriter, r *http.Request) {
+//HtmlMailSendHandler is endpoint for `/events`
+func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	htmlBody := buf.String()
 
-	fmt.Println("html ->", htmlBody)
+	fmt.Println("*****html ->", htmlBody)
 	markdown, err := converter.ConvertString(htmlBody)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Could not convert html to markdown : %v\n", err)
 	}
-	fmt.Println("md ->", markdown)
+	fmt.Println("******md ->", markdown)
 
 	// resp, err := http.Post(webHookUrl, "application/json", strings.NewReader(markdown))
 	// if err != nil {
