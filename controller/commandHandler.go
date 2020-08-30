@@ -15,7 +15,6 @@ import (
 var (
 	api         *slack.Client
 	converter   *md.Converter
-	webHookUrl  string
 	token       string
 	verifytoken string
 )
@@ -24,7 +23,10 @@ func init() {
 	converter = md.NewConverter("", true, nil)
 	token = os.Getenv("SLACK_BOT_TOKEN")
 	verifytoken = os.Getenv("SLACK_VERIFY_TOKEN")
-	webHookUrl = os.Getenv("WEB_HOOK_URL")
+	// generalWebHookURL = os.Getenv("GENERAL_WEB_HOOK_URL")
+	// golangWebHookURL = os.Getenv("GOLANG_WEB_HOOK_URL")
+	// dm1WebHookURL = os.Getenv("DM1_WEB_HOOK_URL")
+	// dm2WebHookURL = os.Getenv("DM2_WEB_HOOK_URL")
 	api = slack.New(token)
 }
 
@@ -228,6 +230,14 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 		BodyHTML     string `json:"body_html"`
 		BodyMarkdown string
 	}
+
+	webHookURL := r.Header.Values("web_hook_url")[0]
+
+	if webHookURL == "" {
+		webHookURL = os.Getenv("WEB_HOOK_URL")
+		fmt.Printf("Could not get webHookURL. Use default webhook URL: %s\n", webHookURL)
+	}
+
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
@@ -257,7 +267,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	msg := slack.WebhookMessage{
 		Attachments: []slack.Attachment{attachment},
 	}
-	err = slack.PostWebhook(webHookUrl, &msg)
+	err = slack.PostWebhook(webHookURL, &msg)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -268,6 +278,13 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 //WebHookTestHandler is endpoint for `/webhook`
 func WebHookTestHandler(w http.ResponseWriter, r *http.Request) {
 
+	webHookURL := r.Header.Get("web_hook_url")
+
+	if webHookURL == "" {
+		webHookURL = os.Getenv("WEB_HOOK_URL")
+		fmt.Printf("Could not get webHookURL. Use default webhook URL: %s\n", webHookURL)
+	}
+
 	attachment := slack.Attachment{
 		Color:    "good",
 		Title:    "Test webhook",
@@ -277,7 +294,7 @@ func WebHookTestHandler(w http.ResponseWriter, r *http.Request) {
 	msg := slack.WebhookMessage{
 		Attachments: []slack.Attachment{attachment},
 	}
-	err := slack.PostWebhook(webHookUrl, &msg)
+	err := slack.PostWebhook(webHookURL, &msg)
 	if err != nil {
 		fmt.Println(err)
 	}
