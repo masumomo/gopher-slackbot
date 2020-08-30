@@ -258,10 +258,11 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 func WebHookTestHandler(w http.ResponseWriter, r *http.Request) {
 
 	attachment := slack.Attachment{
-		Color:      "good",
-		Title:      "Test webhook",
-		Fallback:   "You successfully posted by Incoming Webhook URL!",
-		MarkdownIn: []string{"This is a sentence with some `inline *code*` in it. :smile:\nSee <http://www.foo.com|This message *is* a link>"},
+		Color:    "good",
+		Title:    "Test webhook",
+		Fallback: "You successfully posted by Incoming Webhook URL!",
+		Text:     "This is a sentence with some `inline *code*` in it. :smile:\nSee <http://www.foo.com|This message *is* a link>",
+		// MarkdownIn: []string{"This is a sentence with some `inline *code*` in it. :smile:\nSee <http://www.foo.com|This message *is* a link>"},
 	}
 	msg := slack.WebhookMessage{
 		Attachments: []slack.Attachment{attachment},
