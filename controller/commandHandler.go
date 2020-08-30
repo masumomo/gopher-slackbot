@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/nlopes/slack/slackevents"
@@ -220,18 +221,26 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//HtmlMailSendHandler is endpoint for `/events`
-func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
+//WebHookTriggeredByMailHandler is endpoint for `/events`
+func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
+	// This webhook can receive Title and Body.
+	// Title and Body are sapalated by empty line like this example below
+	/**
+	{{mail subject}} by {{from name}}
 
+	{{body_html}}
+	**/
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
-	htmlBody, err := url.QueryUnescape(buf.String())
+	payload, err := url.QueryUnescape(buf.String())
 	if err != nil {
 		fmt.Printf("Could not decode html : %v\n", err)
 	}
+	title := strings.SplitN(payload, "\n\n", 2)[0]
+	html := strings.SplitN(payload, "\n\n", 2)[1]
 
-	markdown, err := converter.ConvertString(htmlBody)
+	markdown, err := converter.ConvertString(html)
 	if err != nil {
 		fmt.Printf("Could not convert html to markdown : %v\n", err)
 	}
@@ -239,7 +248,7 @@ func HtmlMailSendHandler(w http.ResponseWriter, r *http.Request) {
 
 	attachment := slack.Attachment{
 		Color:    "good",
-		Title:    "test",
+		Title:    title,
 		Fallback: "You successfully posted by Incoming Webhook URL!",
 		Text:     markdown,
 	}
