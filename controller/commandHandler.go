@@ -261,7 +261,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Println(err)
 	// }
 
-	fmt.Printf("markdown is this :%v\n", markdown)
+	// fmt.Printf("markdown is this :%v\n", markdown)
 	fmt.Printf("Message successfully sent to channel :%v\n", title)
 }
 
