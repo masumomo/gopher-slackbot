@@ -247,12 +247,12 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// fmt.Println("******md ->", markdown)
 
-	attachment := slack.Attachment{
-		Color:    "good",
-		Title:    title,
-		Fallback: "You successfully posted by Incoming Webhook URL!",
-		Text:     markdown,
-	}
+	// attachment := slack.Attachment{
+	// 	Color:    "good",
+	// 	Title:    title,
+	// 	Fallback: "You successfully posted by Incoming Webhook URL!",
+	// 	Text:     markdown,
+	// }
 	// msg := slack.WebhookMessage{
 	// 	Attachments: []slack.Attachment{attachment},
 	// }
@@ -261,6 +261,7 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Println(err)
 	// }
 
+	fmt.Printf("markdown is this :%v\n", markdown)
 	fmt.Printf("Message successfully sent to channel :%v\n", title)
 }
 
