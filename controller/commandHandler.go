@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
-	"strings"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/nlopes/slack/slackevents"
@@ -234,12 +232,13 @@ func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
-	payload, err := url.QueryUnescape(buf.String())
+	payload := buf.String()
+	// payload, err := url.QueryUnescape(buf.String())
 	fmt.Println(payload)
-	if err != nil {
-		fmt.Printf("Could not decode html : %v\n", err)
-	}
-	title := strings.SplitN(payload, "\n", 2)[0]
+	// if err != nil {
+	// 	fmt.Printf("Could not decode html : %v\n", err)
+	// }
+	// title := strings.SplitN(payload, "\n", 2)[0]
 	// html := strings.SplitN(payload, "\n", 2)[1]
 
 	// markdown, err := converter.ConvertString(html)
