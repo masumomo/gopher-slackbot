@@ -32,10 +32,6 @@ func init() {
 	converter = md.NewConverter("", true, nil)
 	token = os.Getenv("SLACK_BOT_TOKEN")
 	verifytoken = os.Getenv("SLACK_VERIFY_TOKEN")
-	// generalWebHookURL = os.Getenv("GENERAL_WEB_HOOK_URL")
-	// golangWebHookURL = os.Getenv("GOLANG_WEB_HOOK_URL")
-	// dm1WebHookURL = os.Getenv("DM1_WEB_HOOK_URL")
-	// dm2WebHookURL = os.Getenv("DM2_WEB_HOOK_URL")
 	api = slack.New(token)
 }
 
@@ -241,6 +237,18 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
+	case "/godoc":
+		msg := slack.MsgOptionText(sl.Text, false)
+		//Trim and sepalate message
+
+		//Create reply
+
+		_, _, err = api.PostMessage(sl.ChannelID, msg)
+		if err != nil {
+			fmt.Printf("Could not post message: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	default:
 		fmt.Printf("This command is not supported : %v\n", sl.Command)
 		w.WriteHeader(http.StatusInternalServerError)
