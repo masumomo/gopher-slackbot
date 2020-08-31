@@ -68,7 +68,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		case *slackevents.MessageEvent:
-			matched, _ := regexp.MatchString(evt.Text, "/((g|G)opher)/")
+			matched, _ := regexp.MatchString(evt.Text, "((g|G)opher)")
 
 			if !matched {
 				fmt.Println(evt.Text, " is not matched")
