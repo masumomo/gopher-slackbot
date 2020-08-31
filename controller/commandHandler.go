@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/nlopes/slack/slackevents"
@@ -62,6 +63,19 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 		switch evt := evt.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
+			if err != nil {
+				fmt.Printf("Could not post message: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		case *slackevents.MessageEvent:
+			matched, _ := regexp.MatchString(evt.Text, "/((g|G)opher)/")
+
+			if !matched {
+				fmt.Println(evt.Text, " is not matched")
+				return
+			}
+			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Did you need me?", false))
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -222,6 +236,7 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //WebHookTriggeredByMailHandler is endpoint for `/webhook-triggered-by-mail`
+//To use this webhook, you have to specify web_hook_url in HTML header
 func WebHookTriggeredByMailHandler(w http.ResponseWriter, r *http.Request) {
 
 	type MailFromZapier struct {
