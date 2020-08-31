@@ -33,7 +33,6 @@ func init() {
 
 //EventsHandler is endpoint for `/events`
 func EventsHandler(w http.ResponseWriter, r *http.Request) {
-
 	defer r.Body.Close()
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
@@ -46,6 +45,8 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println("Revive event", evt)
 
 	if evt.Type == slackevents.URLVerification {
 		var r *slackevents.ChallengeResponse
