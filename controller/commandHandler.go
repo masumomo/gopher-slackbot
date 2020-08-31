@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
+	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/nlopes/slack/slackevents"
@@ -19,6 +21,12 @@ var (
 	token       string
 	verifytoken string
 )
+var randomMessages = []string{
+	"Did you need me?",
+	"What's up?",
+	"I'm quite tired...",
+	"I don't wanna work any more",
+}
 
 func init() {
 	converter = md.NewConverter("", true, nil)
@@ -78,7 +86,9 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(evt.Text, " is not matched")
 				return
 			}
-			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Did you need me?", false))
+			rand.Seed(time.Now().UnixNano())
+
+			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
