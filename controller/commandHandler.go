@@ -46,8 +46,6 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Revive event", evt)
-
 	if evt.Type == slackevents.URLVerification {
 		var r *slackevents.ChallengeResponse
 		err := json.Unmarshal([]byte(body), &r)
@@ -61,6 +59,8 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if evt.Type == slackevents.CallbackEvent {
+
+		fmt.Println("Revive event", evt.InnerEvent.Data.(type))
 		switch evt := evt.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
