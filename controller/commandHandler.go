@@ -99,7 +99,7 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 
 			words := strings.Split(evt.Text, " ")
 			for _, word := range words {
-				isSepalatable, _ := regexp.MatchString("^([a-z])+\\.[A-Z]([a-z])+$", word)
+				isSepalatable, _ := regexp.MatchString("^([a-z])+\\.[A-Z]([A-z])+$", word)
 				if err != nil {
 					fmt.Printf("Regex is bad : %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
