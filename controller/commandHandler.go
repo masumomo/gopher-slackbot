@@ -107,8 +107,8 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				if isSepalatable {
 					//Trim and sepalate message
-					pkg = strings.SplitAfterN(word, ".", 2)[0]
-					f = strings.SplitAfterN(word, ".", 2)[1]
+					pkg = strings.Split(word, ".")[0]
+					f = strings.Split(word, ".")[1]
 					break
 				}
 			}
@@ -117,10 +117,10 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 			if pkg != "" && f != "" {
 				//Look for doc
 				rand.Seed(time.Now().UnixNano())
-				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
-				refGolangDoc := "https://golang.org/" + pkg + "/#" + f
-				refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
-				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refDevDoc+"\n"+refGolangDoc, false))
+				msg := "Thank you for asking! Here are documentation of *" + pkg + f + "*\n\n"
+				refGolangDoc := "https://golang.org/pkg/" + pkg[0:len(pkg)-2] + "/#" + f
+				refDevDoc := "https://devdocs.io/go/" + pkg[0:len(pkg)-2] + "/index#" + f
+				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n"+refDevDoc, false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
