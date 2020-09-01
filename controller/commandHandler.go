@@ -117,9 +117,9 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 			if pkg != "" && f != "" {
 				//Look for doc
 				rand.Seed(time.Now().UnixNano())
-				msg := "Thank you for asking! Here are documentation of *" + pkg + f + "*\n\n"
-				refGolangDoc := "https://golang.org/pkg/" + pkg[0:len(pkg)-2] + "/#" + f
-				refDevDoc := "https://devdocs.io/go/" + pkg[0:len(pkg)-2] + "/index#" + f
+				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
+				refGolangDoc := "https://golang.org/pkg/" + pkg + "/#" + f
+				refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
 				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n"+refDevDoc, false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
