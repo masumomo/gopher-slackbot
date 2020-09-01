@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
@@ -72,23 +73,70 @@ func EventsHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		case *slackevents.MessageEvent:
-			matched, _ := regexp.MatchString("(G|g)opher", evt.Text)
+			includesName, _ := regexp.MatchString("(G|g)opher", evt.Text)
 			if err != nil {
 				fmt.Printf("Regex is bad : %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if !matched {
+			if !includesName {
 				fmt.Println(evt.Text, " is not matched")
 				return
 			}
-			rand.Seed(time.Now().UnixNano())
-
-			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
+			includesTellMe, _ := regexp.MatchString("(T|t)ell me ", evt.Text)
 			if err != nil {
-				fmt.Printf("Could not post message: %v\n", err)
+				fmt.Printf("Regex is bad : %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
+			}
+			if !includesTellMe {
+
+			}
+			var (
+				pkg string
+				f   string
+			)
+
+			words := strings.Split(evt.Text, " ")
+			for i, word := range words {
+				fmt.Println("i:word ", i, word)
+				isSepalatable, _ := regexp.MatchString("^([a-z])+\\.[A-Z]([a-z])+$", evt.Text)
+				if err != nil {
+					fmt.Printf("Regex is bad : %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				if isSepalatable {
+					//Trim and sepalate message
+					pkg = strings.SplitAfterN(word, ".", 2)[0]
+					f = strings.SplitAfterN(word, ".", 2)[1]
+					break
+				}
+			}
+
+			//Create reply
+			if pkg != "" && f != "" {
+				//Look for doc
+				rand.Seed(time.Now().UnixNano())
+				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
+				refGolangDoc := "https://golang.org/" + pkg + "/#" + f
+				refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
+				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n"+refDevDoc, false))
+				if err != nil {
+					fmt.Printf("Could not post message: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+			} else {
+				//Reply normal message
+				rand.Seed(time.Now().UnixNano())
+
+				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
+				if err != nil {
+					fmt.Printf("Could not post message: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}
 		}
 	}
@@ -237,18 +285,6 @@ func CommandsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
-	case "/godoc":
-		msg := slack.MsgOptionText(sl.Text, false)
-		//Trim and sepalate message
-
-		//Create reply
-
-		_, _, err = api.PostMessage(sl.ChannelID, msg)
-		if err != nil {
-			fmt.Printf("Could not post message: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 	default:
 		fmt.Printf("This command is not supported : %v\n", sl.Command)
 		w.WriteHeader(http.StatusInternalServerError)
