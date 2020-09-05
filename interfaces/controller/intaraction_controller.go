@@ -35,7 +35,13 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		http.Error(w, "This calback doesn't support :"+payload.CallbackID, http.StatusInternalServerError)
 	}
 
-	fmt.Println("payload.Type", payload.Type)
+	fmt.Println("payload", payload.Type)
+
+	b, err := json.MarshalIndent(payload, "", " ")
+	if err == nil {
+		s := string(b)
+		fmt.Println(s)
+	}
 
 	if payload.Type == "shortcut" {
 		attachment := slack.Attachment{
@@ -80,6 +86,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
+			return
 		}
 
 		fmt.Printf("Message with buttons successfully sent to channel %s at %s\n", channelID, timestamp)
