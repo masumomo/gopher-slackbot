@@ -75,7 +75,8 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		}
 
 		message := slack.MsgOptionAttachments(attachment)
-		fmt.Println("payload", payload)
+		fmt.Println("payload.Channel", payload.Channel)
+		fmt.Println("payload.Channel.ID", payload.Channel.ID)
 		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
