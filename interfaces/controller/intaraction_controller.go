@@ -9,17 +9,19 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// InteractionController is controller for Slack Interaction
 type InteractionController struct {
 	interactionInteractor *usecase.InteractionInteractor
 }
 
+// NewInteractionController should be invoked in infrastructure
 func NewInteractionController(ic *usecase.InteractionInteractor) *InteractionController {
 	return &InteractionController{
 		interactionInteractor: ic,
 	}
 }
 
-//InteractionsHandler is endpoint for `/interactions`
+//InteractionHandler is endpoint for `/interactions`
 func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *http.Request) {
 	var payload slack.InteractionCallback
 	err := json.Unmarshal([]byte(r.FormValue("payload")), &payload)

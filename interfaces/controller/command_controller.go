@@ -9,10 +9,12 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// CommandController is controller for Slack Command
 type CommandController struct {
 	commandInteractor *usecase.CommandInteractor
 }
 
+// NewCommandController should be invoked in infrastructure
 func NewCommandController(ci *usecase.CommandInteractor) *CommandController {
 	return &CommandController{
 		commandInteractor: ci,

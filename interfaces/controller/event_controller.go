@@ -16,10 +16,12 @@ import (
 	"github.com/slack-go/slack/slackevents"
 )
 
+// EventController is controller for Slack Event
 type EventController struct {
 	eventInteractor *usecase.EventInteractor
 }
 
+// NewEventController should be invoked in infrastructure
 func NewEventController(eu *usecase.EventInteractor) *EventController {
 	return &EventController{
 		eventInteractor: eu,
