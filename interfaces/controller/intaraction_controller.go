@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/masumomo/gopher-slackbot/usecase"
 	"github.com/slack-go/slack"
@@ -13,18 +12,12 @@ import (
 // InteractionController is controller for Slack Interaction
 type InteractionController struct {
 	interactionInteractor *usecase.InteractionInteractor
-	api                   *slack.Client
-	token                 string
-	verifytoken           string
 }
 
 // NewInteractionController should be invoked in infrastructure
 func NewInteractionController(ic *usecase.InteractionInteractor) *InteractionController {
 	return &InteractionController{
 		interactionInteractor: ic,
-		api:                   slack.New(token),
-		token:                 os.Getenv("SLACK_BOT_TOKEN"),
-		verifytoken:           os.Getenv("SLACK_VERIFY_TOKEN"),
 	}
 }
 
@@ -82,8 +75,8 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		}
 
 		message := slack.MsgOptionAttachments(attachment)
-		fmt.Println("api", ic.api)
-		channelID, timestamp, err := ic.api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
+		fmt.Println("api", api)
+		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 		}
@@ -114,7 +107,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 
 		}
 
-		_, _, err = ic.api.PostMessage(payload.Channel.ID, msg)
+		_, _, err = api.PostMessage(payload.Channel.ID, msg)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
