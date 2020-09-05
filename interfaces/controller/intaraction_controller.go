@@ -82,8 +82,8 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		}
 
 		message := slack.MsgOptionAttachments(attachment)
-		fmt.Println("api", api)
-		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
+		fmt.Println("api", ic.api)
+		channelID, timestamp, err := ic.api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 		}
@@ -114,7 +114,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 
 		}
 
-		_, _, err = api.PostMessage(payload.Channel.ID, msg)
+		_, _, err = ic.api.PostMessage(payload.Channel.ID, msg)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

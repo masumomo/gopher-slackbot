@@ -64,7 +64,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 	if evt.Type == slackevents.CallbackEvent {
 		switch evt := evt.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
-			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("", false))
+			_, _, err := ec.api.PostMessage(evt.Channel, slack.MsgOptionText("", false))
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -118,7 +118,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
 				refGolangDoc := "https://golang.org/pkg/" + pkg + "/#" + f
 				// refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
-				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
+				_, _, err := ec.api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -127,7 +127,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 			} else {
 				//Reply normal message
 				rand.Seed(time.Now().UnixNano())
-				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("randomMessages[rand.Intn(len(randomMessages))]", false))
+				_, _, err := ec.api.PostMessage(evt.Channel, slack.MsgOptionText("randomMessages[rand.Intn(len(randomMessages))]", false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
