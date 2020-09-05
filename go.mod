@@ -1,6 +1,6 @@
 module github.com/masumomo/gopher-slackbot
 
-go 1.14
+go 1.12
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.2.0
