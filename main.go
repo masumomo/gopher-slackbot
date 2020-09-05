@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"log"
 	"os"
 
-	"github.com/masumomo/gopher-slackbot/controller"
+	"github.com/masumomo/gopher-slackbot/infrastructure/server"
 )
 
 func main() {
-	http.HandleFunc("/events", controller.EventsHandler)
-	http.HandleFunc("/interactions", controller.InteractionsHandler)
-	http.HandleFunc("/commands", controller.CommandsHandler)
-	http.HandleFunc("/webhook-triggered-by-mail", controller.WebHookTriggeredByMailHandler)
-	http.HandleFunc("/webhook", controller.WebHookTestHandler)
 	fmt.Println("[INFO] Server listening")
+
+	app := server.NewApp()
+
 	port := os.Getenv("PORT")
-	http.ListenAndServe(":"+port, nil)
+
+	if err := app.Run(port); err != nil {
+		log.Fatalf("%s", err.Error())
+	}
+
 }
