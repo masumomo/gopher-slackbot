@@ -1,4 +1,4 @@
-package models
+package model
 
 type Interaction struct {
 	ID string

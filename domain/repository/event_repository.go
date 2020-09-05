@@ -1,6 +1,6 @@
 package repository
 
-import model "github.com/masumomo/gopher-slackbot/domain/models"
+import "github.com/masumomo/gopher-slackbot/domain/model"
 
 type EventRepository struct {
 	events map[string]*model.Event
