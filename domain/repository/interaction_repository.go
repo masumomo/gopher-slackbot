@@ -3,7 +3,7 @@ package repository
 import "github.com/masumomo/gopher-slackbot/domain/model"
 
 type InteractionRepository struct {
-	events map[string]*model.Event
+	events map[string]*model.Interaction
 }
 
 func NewInteractionRepository() *InteractionRepository {

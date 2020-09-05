@@ -43,6 +43,7 @@ func (app *App) Run(port string) error {
 	eventController := controller.NewEventController(app.eventInteractor)
 	interactionController := controller.NewInteractionController(app.interactiontInteractor)
 	commandController := controller.NewCommandController(app.commandInteractor)
+
 	app.mux.HandleFunc("/events", eventController.EventHandler)
 	app.mux.HandleFunc("/interactions", interactionController.InteractionHandler)
 	app.mux.HandleFunc("/commands", commandController.CommandHandler)
