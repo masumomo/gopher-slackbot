@@ -35,15 +35,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		http.Error(w, "This calback doesn't support :"+payload.CallbackID, http.StatusInternalServerError)
 	}
 
-	fmt.Println("payload", payload.Type)
-
-	b, err := json.MarshalIndent(payload, "", " ")
-	if err == nil {
-		s := string(b)
-		fmt.Println(s)
-	}
-
-	if payload.Type == "shortcut" {
+	if payload.Type == slack.InteractionTypeMessageAction {
 		attachment := slack.Attachment{
 			Pretext:    "Which programming language do you like?",
 			Fallback:   "We don't currently support your client",
@@ -81,8 +73,6 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		}
 
 		message := slack.MsgOptionAttachments(attachment)
-		fmt.Println("payload.Channel", payload.Channel)
-		fmt.Println("payload.Channel.ID", payload.Channel.ID)
 		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
