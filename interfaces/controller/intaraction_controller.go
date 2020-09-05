@@ -37,7 +37,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 
 	fmt.Println("payload.Type", payload.Type)
 
-	if payload.Type == slack.InteractionTypeMessageAction {
+	if payload.Type == "shortcut" {
 		attachment := slack.Attachment{
 			Pretext:    "Which programming language do you like?",
 			Fallback:   "We don't currently support your client",
