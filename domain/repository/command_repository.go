@@ -1,11 +1,9 @@
 package repository
 
-import (
-	"github.com/masumomo/gopher-slackbot/domain/model"
-)
+import "github.com/masumomo/gopher-slackbot/domain/model"
 
 type CommandRepository struct {
-	events map[string]*model.Event
+	commands map[string]*model.Event
 }
 
 func NewCommandRepository() *CommandRepository {
