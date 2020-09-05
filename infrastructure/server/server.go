@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/masumomo/gopher-slackbot/usecase"
 )
 
+//App holds server and Interactor to invoke UseCase
 type App struct {
 	httpServer             *http.Server
 	mux                    *http.ServeMux
@@ -18,6 +18,7 @@ type App struct {
 	commandInteractor      *usecase.CommandInteractor
 }
 
+//NewApp creates repository and UseCase
 func NewApp() *App {
 	// db := initDB()
 
@@ -32,11 +33,12 @@ func NewApp() *App {
 		eventInteractor:        usecase.NewEventInteractor(eventRepo),
 		interactiontInteractor: usecase.NewInteractionInteractor(interactionRepo),
 		commandInteractor:      usecase.NewCommandInteractor(commandRepo),
+		mux:                    http.NewServeMux(),
 	}
 }
 
+// Run is invoked in main at once
 func (app *App) Run(port string) error {
-	fmt.Println("[INFO] Server listening")
 	app.httpServer = &http.Server{
 		Addr: ":" + port,
 	}
