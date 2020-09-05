@@ -121,7 +121,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 			} else {
 				//Reply normal message
 				rand.Seed(time.Now().UnixNano())
-				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("randomMessages[rand.Intn(len(randomMessages))]", false))
+				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
