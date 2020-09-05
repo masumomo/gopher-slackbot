@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/masumomo/gopher-slackbot/usecase"
 	"github.com/slack-go/slack"
@@ -12,12 +13,19 @@ import (
 // CommandController is controller for Slack Command
 type CommandController struct {
 	commandInteractor *usecase.CommandInteractor
+	api               *slack.Client
+	token             string
+	verifytoken       string
 }
 
 // NewCommandController should be invoked in infrastructure
 func NewCommandController(ci *usecase.CommandInteractor) *CommandController {
+
 	return &CommandController{
 		commandInteractor: ci,
+		api:               slack.New(token),
+		token:             os.Getenv("SLACK_BOT_TOKEN"),
+		verifytoken:       os.Getenv("SLACK_VERIFY_TOKEN"),
 	}
 }
 

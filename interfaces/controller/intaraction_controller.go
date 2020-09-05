@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/masumomo/gopher-slackbot/usecase"
 	"github.com/slack-go/slack"
@@ -12,12 +13,18 @@ import (
 // InteractionController is controller for Slack Interaction
 type InteractionController struct {
 	interactionInteractor *usecase.InteractionInteractor
+	api                   *slack.Client
+	token                 string
+	verifytoken           string
 }
 
 // NewInteractionController should be invoked in infrastructure
 func NewInteractionController(ic *usecase.InteractionInteractor) *InteractionController {
 	return &InteractionController{
 		interactionInteractor: ic,
+		api:                   slack.New(token),
+		token:                 os.Getenv("SLACK_BOT_TOKEN"),
+		verifytoken:           os.Getenv("SLACK_VERIFY_TOKEN"),
 	}
 }
 
