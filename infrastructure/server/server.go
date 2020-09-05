@@ -21,8 +21,8 @@ type App struct {
 func NewApp() *App {
 	// db := initDB()
 
-	// eventRepo := bmmongo.NewEventRepository(db, viper.GetString("mongo.event_collection"))
-	// interactionRepo := bmmongo.NewInteractionRepository(db, viper.GetString("mongo.interaction_collection"))
+	// eventRepo := dbreposigoty.NewEventRepository(db, viper.GetString("mongo.event_collection")) // to use database
+	// interactionRepo := dbreposigoty.NewInteractionRepository(db, viper.GetString("mongo.interaction_collection")) // to use database
 
 	eventRepo := repository.NewEventRepository()
 	interactionRepo := repository.NewInteractionRepository()
