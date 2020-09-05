@@ -3,6 +3,7 @@
   "description": "Slack Bot app using Golang",
   "keywords": [
     "go",
+    "heroku",
     "slack",
     "bot"
   ],
