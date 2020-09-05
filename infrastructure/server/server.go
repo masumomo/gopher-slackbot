@@ -9,9 +9,8 @@ import (
 	"github.com/masumomo/gopher-slackbot/usecase"
 )
 
-//App holds server and Interactor to invoke UseCase
+//App holds ServeMux and Interactor to invoke UseCase
 type App struct {
-	httpServer             *http.Server
 	mux                    *http.ServeMux
 	eventInteractor        *usecase.EventInteractor
 	interactiontInteractor *usecase.InteractionInteractor
@@ -30,18 +29,15 @@ func NewApp() *App {
 	commandRepo := repository.NewCommandRepository()
 
 	return &App{
+		mux:                    http.NewServeMux(),
 		eventInteractor:        usecase.NewEventInteractor(eventRepo),
 		interactiontInteractor: usecase.NewInteractionInteractor(interactionRepo),
 		commandInteractor:      usecase.NewCommandInteractor(commandRepo),
-		mux:                    http.NewServeMux(),
 	}
 }
 
 // Run is invoked in main at once
 func (app *App) Run(port string) error {
-	app.httpServer = &http.Server{
-		Addr: ":" + port,
-	}
 	eventController := controller.NewEventController(app.eventInteractor)
 	interactionController := controller.NewInteractionController(app.interactiontInteractor)
 	commandController := controller.NewCommandController(app.commandInteractor)
@@ -50,7 +46,7 @@ func (app *App) Run(port string) error {
 	app.mux.HandleFunc("/interactions", interactionController.InteractionHandler)
 	app.mux.HandleFunc("/commands", commandController.CommandHandler)
 
-	if err := app.httpServer.ListenAndServe(); err != nil {
+	if err := http.ListenAndServe(":"+port, app.mux); err != nil {
 		log.Fatalf("Failed to listen and serve: %+v", err)
 		return err
 	}
