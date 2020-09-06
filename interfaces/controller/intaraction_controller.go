@@ -39,7 +39,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 
 	if payload.Type == slack.InteractionTypeMessageAction {
 
-		err = ic.interactionInteractor.SaveInteraction(context.Background(), string(payload.Type), payload.ActionTs, payload.User.ID)
+		err = ic.interactionInteractor.SaveInteraction(context.Background(), string(payload.Type), payload.CallbackID, payload.User.ID)
 		if err != nil {
 			fmt.Printf("Could not save interaction: %v\n", err)
 		}
