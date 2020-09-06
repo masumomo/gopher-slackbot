@@ -1,20 +1,31 @@
 package model
 
+import "time"
+
 type Command struct {
-	ID string
+	CommandName string
+	Text        string
+	CreatedBy   string
+	CreatedAt   time.Time
 }
 
-func NewCommand(id string) *Command {
+func NewCommand(commandName, text, userName string) *Command {
 	return &Command{
-		ID: id,
+		CommandName: commandName,
+		Text:        text,
+		CreatedBy:   userName,
+		CreatedAt:   time.Now(),
 	}
 }
 
 func (Command) TableName() string { return "commands" }
 
-// func (Command) CreateTableDDL() string {
-// 	return `CREATE TABLE IF NOT EXISTS commands(` +
-// 		`"id"   INTEGER  NOT NULL PRIMARY KEY` +
-// 		`,name VARCHAR(4) NOT NULL` +
-// 		`);`
-// }
+func (Command) CreateTableDDL() string {
+	return `CREATE TABLE IF NOT EXISTS commands(` +
+		`"id" SERIAL PRIMARY KEY` +
+		`,command_name VARCHAR(64) NOT NULL` +
+		`,"text" TEXT NOT NULL` +
+		`,created_by VARCHAR(255) NOT NULL` +
+		`,created_at TIMESTAMP NOT NULL` +
+		`);`
+}

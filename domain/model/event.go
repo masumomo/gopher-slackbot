@@ -1,16 +1,22 @@
 package model
 
+import (
+	"time"
+)
+
 type Event struct {
-	ID        string
 	EventType string
-	Data      string
+	Text      string
+	CreatedBy string
+	CreatedAt time.Time
 }
 
-func NewEvent(id, eventType, data string) *Event {
+func NewEvent(eventType, text, userName string) *Event {
 	return &Event{
-		ID:        id,
 		EventType: eventType,
-		Data:      data,
+		Text:      text,
+		CreatedBy: userName,
+		CreatedAt: time.Now(),
 	}
 }
 
@@ -20,6 +26,8 @@ func (Event) CreateTableDDL() string {
 	return `CREATE TABLE IF NOT EXISTS events(` +
 		`"id" SERIAL PRIMARY KEY` +
 		`,event_type VARCHAR(25) NOT NULL` +
-		`,data TEXT NOT NULL` +
+		`,"text" TEXT NOT NULL` +
+		`,created_by VARCHAR(255) NOT NULL` +
+		`,created_at TIMESTAMP NOT NULL` +
 		`);`
 }

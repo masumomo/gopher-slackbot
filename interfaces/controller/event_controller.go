@@ -56,12 +56,10 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 		w.Write([]byte(r.Challenge))
 	}
 
-	eventData, _ := json.Marshal(evt.Data)
-	ec.eventInteractor.SaveEvent(context.Background(), evt.Type, string(eventData))
-
 	if evt.Type == slackevents.CallbackEvent {
 		switch evt := evt.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
+			ec.eventInteractor.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
 			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
@@ -69,6 +67,10 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				return
 			}
 		case *slackevents.MessageEvent:
+			if evt.BotID != "" { //If it came from bot, ignore
+				return
+			}
+			ec.eventInteractor.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
 			includesName, _ := regexp.MatchString("(G|g)opher", evt.Text)
 			if err != nil {
 				fmt.Printf("Regex is bad : %v\n", err)
@@ -111,10 +113,12 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 			//Create reply
 			if pkg != "" && f != "" {
 				//Look for doc
+				//TODO it should be in usecase
 				rand.Seed(time.Now().UnixNano())
 				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
 				refGolangDoc := "https://golang.org/pkg/" + pkg + "/#" + f
 				// refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
+				ec.eventInteractor.SaveGodDoc(context.Background(), evt.Type, pkg+"."+f, refGolangDoc)
 				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)

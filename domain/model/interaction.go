@@ -1,19 +1,31 @@
 package model
 
+import "time"
+
 type Interaction struct {
-	ID string
+	InteractionType string
+	Action          string
+	CreatedBy       string
+	CreatedAt       time.Time
 }
 
-func NewInteraction(id string) *Interaction {
+func NewInteraction(interactionType, action, userName string) *Interaction {
 	return &Interaction{
-		ID: id,
+		InteractionType: interactionType,
+		Action:          action,
+		CreatedBy:       userName,
+		CreatedAt:       time.Now(),
 	}
 }
 
 func (Interaction) TableName() string { return "interactions" }
 
-// func (Interaction) CreateTableDDL() string {
-// 	return `CREATE TABLE IF NOT EXISTS interactions(` +
-// 		`"id"   INTEGER  NOT NULL PRIMARY KEY` +
-// 		`);`
-// }
+func (Interaction) CreateTableDDL() string {
+	return `CREATE TABLE IF NOT EXISTS interactions(` +
+		`"id" SERIAL PRIMARY KEY` +
+		`,interaction_type VARCHAR(25) NOT NULL` +
+		`,action VARCHAR(64) NOT NULL` +
+		`,created_by VARCHAR(255) NOT NULL` +
+		`,created_at TIMESTAMP NOT NULL` +
+		`);`
+}

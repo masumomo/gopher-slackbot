@@ -8,8 +8,7 @@ import (
 )
 
 type EventRepository struct {
-	db     *sql.DB
-	events map[string]*model.Event
+	db *sql.DB
 }
 
 func NewEventRepository(db *sql.DB) *EventRepository {
@@ -21,8 +20,8 @@ func NewEventRepository(db *sql.DB) *EventRepository {
 	return &EventRepository{db: db}
 }
 
-func (er EventRepository) Save(eventType, eventData string) error {
-	result, err := er.db.Exec(fmt.Sprintf("INSERT INTO events(event_type, data) VALUES ('%s','%s')", eventType, eventData))
+func (er EventRepository) Save(event *model.Event) error {
+	result, err := er.db.Exec(fmt.Sprintf("INSERT INTO events(event_type, text, created_by, created_at) VALUES ('%s','%s','%s','%s')", event.EventType, event.Text, event.CreatedBy, event.CreatedAt))
 	if err != nil {
 		return err
 	}
