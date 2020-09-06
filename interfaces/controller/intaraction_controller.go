@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -33,9 +34,12 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 	if payload.CallbackID != "select_hello_world" {
 		fmt.Println("This calback doesn't support :", payload.CallbackID)
 		http.Error(w, "This calback doesn't support :"+payload.CallbackID, http.StatusInternalServerError)
+		return
 	}
 
 	if payload.Type == slack.InteractionTypeMessageAction {
+
+		ic.interactionInteractor.SaveInteraction(context.Background(), string(payload.Type), payload.ActionTs, payload.User.ID)
 		attachment := slack.Attachment{
 			Pretext:    "Which programming language do you like?",
 			Fallback:   "We don't currently support your client",

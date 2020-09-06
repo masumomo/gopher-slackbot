@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -30,6 +31,8 @@ func (cc *CommandController) CommandHandler(w http.ResponseWriter, r *http.Reque
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	cc.commandInteractor.SaveCommand(context.Background(), sl.Command, sl.Text, sl.UserID)
 
 	switch sl.Command {
 	case "/echo":

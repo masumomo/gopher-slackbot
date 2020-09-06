@@ -55,8 +55,8 @@ func (ci *CommandInteractor) SaveCommand(ctx context.Context, commandName string
 	return nil
 }
 
-func (ei *InteractionInteractor) SaveInteraction(ctx context.Context, interactionType string, interactionData string, createdBy string) error {
-	interaction := model.NewInteraction(interactionType, interactionData, createdBy)
+func (ei *InteractionInteractor) SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error {
+	interaction := model.NewInteraction(interactionType, action, createdBy)
 	err := ei.interactionRepo.Save(interaction)
 	if err != nil {
 		return err
@@ -64,8 +64,8 @@ func (ei *InteractionInteractor) SaveInteraction(ctx context.Context, interactio
 	return nil
 }
 
-func (ei *EventInteractor) SaveGodDoc(ctx context.Context, goDocName string, goDocURL string, createdBy string) error {
-	goDoc := model.NewGoDoc(goDocName, goDocURL, createdBy)
+func (ei *EventInteractor) SaveGodDoc(ctx context.Context, goDocName string, url string, createdBy string) error {
+	goDoc := model.NewGoDoc(goDocName, url, createdBy)
 	err := ei.eventRepo.SaveGoDoc(goDoc)
 	if err != nil {
 		return err
