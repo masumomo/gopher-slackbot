@@ -54,6 +54,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 		}
 		w.Header().Set("Content-Type", "text")
 		w.Write([]byte(r.Challenge))
+		return
 	}
 
 	if evt.Type == slackevents.CallbackEvent {
@@ -125,7 +126,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
 				refGolangDoc := "https://golang.org/pkg/" + pkg + "/#" + f
 				// refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
-				err = ec.eventInteractor.SaveGodDoc(context.Background(), evt.Type, pkg+"."+f, refGolangDoc)
+				err = ec.eventInteractor.SaveGodDoc(context.Background(), pkg+"."+f, refGolangDoc, evt.User)
 				if err != nil {
 					fmt.Printf("Could not save godoc: %v\n", err)
 				}
