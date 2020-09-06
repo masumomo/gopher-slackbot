@@ -59,8 +59,11 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 	if evt.Type == slackevents.CallbackEvent {
 		switch evt := evt.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
-			ec.eventInteractor.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
-			_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
+			err = ec.eventInteractor.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
+			if err != nil {
+				fmt.Printf("Could not save event: %v\n", err)
+			}
+			_, _, err = api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -71,7 +74,10 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 			if evt.BotID != "" { //If it came from bot, ignore
 				return
 			}
-			ec.eventInteractor.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
+			err = ec.eventInteractor.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
+			if err != nil {
+				fmt.Printf("Could not save event: %v\n", err)
+			}
 			includesName, _ := regexp.MatchString("(G|g)opher", evt.Text)
 			if err != nil {
 				fmt.Printf("Regex is bad : %v\n", err)
@@ -119,7 +125,10 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
 				refGolangDoc := "https://golang.org/pkg/" + pkg + "/#" + f
 				// refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
-				ec.eventInteractor.SaveGodDoc(context.Background(), evt.Type, pkg+"."+f, refGolangDoc)
+				err = ec.eventInteractor.SaveGodDoc(context.Background(), evt.Type, pkg+"."+f, refGolangDoc)
+				if err != nil {
+					fmt.Printf("Could not save godoc: %v\n", err)
+				}
 				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)

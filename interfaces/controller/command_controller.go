@@ -32,8 +32,10 @@ func (cc *CommandController) CommandHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	cc.commandInteractor.SaveCommand(context.Background(), sl.Command, sl.Text, sl.UserID)
-
+	err = cc.commandInteractor.SaveCommand(context.Background(), sl.Command, sl.Text, sl.UserID)
+	if err != nil {
+		fmt.Printf("Could not save command: %v\n", err)
+	}
 	switch sl.Command {
 	case "/echo":
 		msg := slack.MsgOptionText(sl.Text, false)

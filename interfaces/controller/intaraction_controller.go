@@ -39,7 +39,10 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 
 	if payload.Type == slack.InteractionTypeMessageAction {
 
-		ic.interactionInteractor.SaveInteraction(context.Background(), string(payload.Type), payload.ActionTs, payload.User.ID)
+		err = ic.interactionInteractor.SaveInteraction(context.Background(), string(payload.Type), payload.ActionTs, payload.User.ID)
+		if err != nil {
+			fmt.Printf("Could not save interaction: %v\n", err)
+		}
 		attachment := slack.Attachment{
 			Pretext:    "Which programming language do you like?",
 			Fallback:   "We don't currently support your client",
