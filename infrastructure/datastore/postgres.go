@@ -1,4 +1,4 @@
-package mock_datastore
+package datastore
 
 import (
 	"database/sql"
