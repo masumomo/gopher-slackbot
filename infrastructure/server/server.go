@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -11,6 +12,7 @@ import (
 
 //App holds ServeMux and Interactor to invoke UseCase
 type App struct {
+	db                     *sql.DB
 	mux                    *http.ServeMux
 	eventInteractor        *usecase.EventInteractor
 	interactiontInteractor *usecase.InteractionInteractor
@@ -18,17 +20,14 @@ type App struct {
 }
 
 //NewApp creates repository and UseCase
-func NewApp() *App {
-	// db := initDB()
+func NewApp(db *sql.DB) *App {
 
-	// eventRepo := dbreposigoty.NewEventRepository(db, viper.GetString("mongo.event_collection")) // to use database
-	// interactionRepo := dbreposigoty.NewInteractionRepository(db, viper.GetString("mongo.interaction_collection")) // to use database
-
-	eventRepo := repository.NewEventRepository()
-	interactionRepo := repository.NewInteractionRepository()
-	commandRepo := repository.NewCommandRepository()
+	eventRepo := repository.NewEventRepository(db)
+	interactionRepo := repository.NewInteractionRepository(db)
+	commandRepo := repository.NewCommandRepository(db)
 
 	return &App{
+		db:                     db,
 		mux:                    http.NewServeMux(),
 		eventInteractor:        usecase.NewEventInteractor(eventRepo),
 		interactiontInteractor: usecase.NewInteractionInteractor(interactionRepo),

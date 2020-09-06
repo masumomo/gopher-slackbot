@@ -1,6 +1,10 @@
 package usecase
 
-import "github.com/masumomo/gopher-slackbot/domain/repository"
+import (
+	"context"
+
+	"github.com/masumomo/gopher-slackbot/domain/repository"
+)
 
 type EventInteractor struct {
 	eventRepo *repository.EventRepository
@@ -30,4 +34,12 @@ func NewCommandInteractor(commandRepo *repository.CommandRepository) *CommandInt
 	return &CommandInteractor{
 		commandRepo: commandRepo,
 	}
+}
+
+func (ei *EventInteractor) SaveEvent(ctx context.Context, eventType string, eventData string) error {
+	err := ei.eventRepo.Save(eventType, eventData)
+	if err != nil {
+		return err
+	}
+	return nil
 }

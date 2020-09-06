@@ -16,7 +16,6 @@ type CommandController struct {
 
 // NewCommandController should be invoked in infrastructure
 func NewCommandController(ci *usecase.CommandInteractor) *CommandController {
-
 	return &CommandController{
 		commandInteractor: ci,
 	}

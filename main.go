@@ -5,13 +5,15 @@ import (
 	"log"
 	"os"
 
+	"github.com/masumomo/gopher-slackbot/infrastructure/datastore"
 	"github.com/masumomo/gopher-slackbot/infrastructure/server"
 )
 
 func main() {
 	fmt.Println("[INFO] Server listening")
 
-	app := server.NewApp()
+	db := datastore.ConnectDB()
+	app := server.NewApp(db)
 
 	port := os.Getenv("PORT")
 

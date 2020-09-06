@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -55,6 +56,9 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 		w.Write([]byte(r.Challenge))
 	}
 
+	eventData, _ := json.Marshal(evt.Data)
+	ec.eventInteractor.SaveEvent(context.Background(), evt.Type, string(eventData))
+
 	if evt.Type == slackevents.CallbackEvent {
 		switch evt := evt.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
@@ -81,27 +85,26 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if !includesTellMe {
 
-			}
 			var (
 				pkg string
 				f   string
 			)
-
-			words := strings.Split(evt.Text, " ")
-			for _, word := range words {
-				isSepalatable, _ := regexp.MatchString("^([a-z])+\\.[A-Z]([A-z])+$", word)
-				if err != nil {
-					fmt.Printf("Regex is bad : %v\n", err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				if isSepalatable {
-					//Trim and sepalate message
-					pkg = strings.Split(word, ".")[0]
-					f = strings.Split(word, ".")[1]
-					break
+			if includesTellMe {
+				words := strings.Split(evt.Text, " ")
+				for _, word := range words {
+					isSepalatable, _ := regexp.MatchString("^([a-z])+\\.[A-Z]([A-z])+$", word)
+					if err != nil {
+						fmt.Printf("Regex is bad : %v\n", err)
+						http.Error(w, err.Error(), http.StatusInternalServerError)
+						return
+					}
+					if isSepalatable {
+						//Trim and sepalate message
+						pkg = strings.Split(word, ".")[0]
+						f = strings.Split(word, ".")[1]
+						break
+					}
 				}
 			}
 
