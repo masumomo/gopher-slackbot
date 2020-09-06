@@ -21,7 +21,7 @@ func NewInteractionRepository(db *sql.DB) *InteractionRepository {
 }
 
 func (ir InteractionRepository) Save(interaction *model.Interaction) error {
-	result, err := ir.db.Exec(fmt.Sprintf("INSERT INTO interactions(interaction_type, action,created_at, created_at) VALUES ('%s','%s','%s','%s')", interaction.InteractionType, interaction.Action, interaction.CreatedBy, interaction.CreatedAt))
+	result, err := ir.db.Exec("INSERT INTO interactions(interaction_type, action,created_at, created_at) VALUES ($1, $2, $3, $4)", interaction.InteractionType, interaction.Action, interaction.CreatedBy, interaction.CreatedAt)
 	if err != nil {
 		return err
 	}

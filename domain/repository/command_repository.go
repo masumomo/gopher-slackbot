@@ -21,7 +21,7 @@ func NewCommandRepository(db *sql.DB) *CommandRepository {
 }
 
 func (cr CommandRepository) Save(command *model.Command) error {
-	result, err := cr.db.Exec(fmt.Sprintf("INSERT INTO commands(command_name, text, created_by, created_at) VALUES ('%s','%s','%s','%s')", command.CommandName, command.Text, command.CreatedBy, command.CreatedAt))
+	result, err := cr.db.Exec("INSERT INTO commands(command_name, text, created_by, created_at) VALUES ($1, $2, $3, $4)", command.CommandName, command.Text, command.CreatedBy, command.CreatedAt)
 	if err != nil {
 		return err
 	}

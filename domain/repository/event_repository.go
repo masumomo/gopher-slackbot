@@ -25,7 +25,7 @@ func NewEventRepository(db *sql.DB) *EventRepository {
 }
 
 func (er EventRepository) Save(event *model.Event) error {
-	result, err := er.db.Exec(fmt.Sprintf("INSERT INTO events(event_type, text, created_by, created_at) VALUES ('%s','%s','%s','%s')", event.EventType, event.Text, event.CreatedBy, event.CreatedAt))
+	result, err := er.db.Exec("INSERT INTO events(event_type, text, created_by, created_at) VALUES ($1, $2, $3, $4)", event.EventType, event.Text, event.CreatedBy, event.CreatedAt)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (er EventRepository) Save(event *model.Event) error {
 }
 
 func (er EventRepository) SaveGoDoc(goDoc *model.GoDoc) error {
-	result, err := er.db.Exec(fmt.Sprintf("INSERT INTO go_docs(name, url, created_by, created_at) VALUES ('%s','%s','%s','%s')", goDoc.Name, goDoc.URL, goDoc.CreatedBy, goDoc.CreatedAt))
+	result, err := er.db.Exec("INSERT INTO go_docs(name, url, created_by, created_at) VALUES ($1, $2, $3, $4)", goDoc.Name, goDoc.URL, goDoc.CreatedBy, goDoc.CreatedAt)
 	if err != nil {
 		return err
 	}
