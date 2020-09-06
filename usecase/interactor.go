@@ -9,7 +9,6 @@ import (
 
 type EventInteractor struct {
 	eventRepo *repository.EventRepository
-	goDocRepo *repository.GoDocRepository
 }
 
 type InteractionInteractor struct {
@@ -67,7 +66,7 @@ func (ei *InteractionInteractor) SaveInteraction(ctx context.Context, interactio
 
 func (ei *EventInteractor) SaveGodDoc(ctx context.Context, goDocName string, goDocURL string, createdBy string) error {
 	goDoc := model.NewGoDoc(goDocName, goDocURL, createdBy)
-	err := ei.goDocRepo.Save(goDoc)
+	err := ei.eventRepo.SaveGoDoc(goDoc)
 	if err != nil {
 		return err
 	}

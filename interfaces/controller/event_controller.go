@@ -66,6 +66,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			return
 		case *slackevents.MessageEvent:
 			if evt.BotID != "" { //If it came from bot, ignore
 				return

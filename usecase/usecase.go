@@ -8,6 +8,7 @@ import (
 
 type EventUseCase interface {
 	SaveEvent(ctx context.Context, event *model.Event) error
+	SaveGoDoc(ctx context.Context, goDoc *model.GoDoc) error
 }
 
 type InteractionUseCase interface {
@@ -16,8 +17,4 @@ type InteractionUseCase interface {
 
 type CommandUseCase interface {
 	SaveCommand(ctx context.Context, command *model.Command) error
-}
-
-type GoDocUseCase interface {
-	SaveGoDoc(ctx context.Context, goDoc *model.GoDoc) error
 }
