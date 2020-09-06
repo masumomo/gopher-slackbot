@@ -13,12 +13,14 @@ import (
 // CommandController is controller for Slack Command
 type CommandController struct {
 	commandInteractor *usecase.CommandInteractor
+	client            *slack.Client
 }
 
 // NewCommandController should be invoked in infrastructure
-func NewCommandController(ci *usecase.CommandInteractor) *CommandController {
+func NewCommandController(ci *usecase.CommandInteractor, client *slack.Client) *CommandController {
 	return &CommandController{
 		commandInteractor: ci,
+		client:            client,
 	}
 }
 
@@ -39,7 +41,7 @@ func (cc *CommandController) CommandHandler(w http.ResponseWriter, r *http.Reque
 	switch sl.Command {
 	case "/echo":
 		msg := slack.MsgOptionText(sl.Text, false)
-		_, _, err = api.PostMessage(sl.ChannelID, msg)
+		_, _, err = cc.client.PostMessage(sl.ChannelID, msg)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -49,14 +51,14 @@ func (cc *CommandController) CommandHandler(w http.ResponseWriter, r *http.Reque
 	case "/echo_broadcast":
 		msg := slack.MsgOptionText(sl.Text, false)
 		params := slack.GetConversationsParameters{}
-		channels, _, err := api.GetConversations(&params)
+		channels, _, err := cc.client.GetConversations(&params)
 		if err != nil {
 			fmt.Printf("GetConversationsParameters %s\n", err)
 			return
 		}
 		for _, channel := range channels {
 			fmt.Printf("Post message to : %v\n", channel.Name)
-			_, _, err = api.PostMessage(channel.ID, msg)
+			_, _, err = cc.client.PostMessage(channel.ID, msg)
 			if err != nil && err.Error() != "not_in_channel" { // Ignore only this err
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -77,14 +79,14 @@ func (cc *CommandController) CommandHandler(w http.ResponseWriter, r *http.Reque
 		// date := strings.TrimSpace(sl.Text)
 		msg := slack.MsgOptionText(sl.Text, false)
 		params := slack.GetConversationsParameters{}
-		channels, _, err := api.GetConversations(&params)
+		channels, _, err := cc.client.GetConversations(&params)
 		if err != nil {
 			fmt.Printf("GetConversationsParameters %s\n", err)
 			return
 		}
 		for _, channel := range channels {
 			fmt.Printf("Post message to : %v\n", channel.Name)
-			_, _, err = api.PostMessage(channel.ID, msg)
+			_, _, err = cc.client.PostMessage(channel.ID, msg)
 			if err != nil && err.Error() != "not_in_channel" { // Ignore only this err
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/slack-go/slack"
+
 	"github.com/masumomo/gopher-slackbot/domain/repository"
 	"github.com/masumomo/gopher-slackbot/interfaces/controller"
 	"github.com/masumomo/gopher-slackbot/usecase"
@@ -12,7 +14,6 @@ import (
 
 //App holds ServeMux and Interactor to invoke UseCase
 type App struct {
-	db                     *sql.DB
 	mux                    *http.ServeMux
 	eventInteractor        *usecase.EventInteractor
 	interactiontInteractor *usecase.InteractionInteractor
@@ -21,13 +22,11 @@ type App struct {
 
 //NewApp creates repository and UseCase
 func NewApp(db *sql.DB) *App {
-
 	eventRepo := repository.NewEventRepository(db)
 	interactionRepo := repository.NewInteractionRepository(db)
 	commandRepo := repository.NewCommandRepository(db)
 
 	return &App{
-		db:                     db,
 		mux:                    http.NewServeMux(),
 		eventInteractor:        usecase.NewEventInteractor(eventRepo),
 		interactiontInteractor: usecase.NewInteractionInteractor(interactionRepo),
@@ -36,10 +35,11 @@ func NewApp(db *sql.DB) *App {
 }
 
 // Run is invoked in main at once
-func (app *App) Run(port string) error {
-	eventController := controller.NewEventController(app.eventInteractor)
-	interactionController := controller.NewInteractionController(app.interactiontInteractor)
-	commandController := controller.NewCommandController(app.commandInteractor)
+func (app *App) Run(port string, token string, verifyToken string) error {
+	slackClient := slack.New(token)
+	eventController := controller.NewEventController(app.eventInteractor, slackClient, verifyToken)
+	interactionController := controller.NewInteractionController(app.interactiontInteractor, slackClient)
+	commandController := controller.NewCommandController(app.commandInteractor, slackClient)
 
 	app.mux.HandleFunc("/events", eventController.EventHandler)
 	app.mux.HandleFunc("/interactions", interactionController.InteractionHandler)

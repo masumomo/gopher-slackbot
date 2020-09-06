@@ -13,12 +13,14 @@ import (
 // InteractionController is controller for Slack Interaction
 type InteractionController struct {
 	interactionInteractor *usecase.InteractionInteractor
+	client                *slack.Client
 }
 
 // NewInteractionController should be invoked in infrastructure
-func NewInteractionController(ic *usecase.InteractionInteractor) *InteractionController {
+func NewInteractionController(ic *usecase.InteractionInteractor, client *slack.Client) *InteractionController {
 	return &InteractionController{
 		interactionInteractor: ic,
+		client:                client,
 	}
 }
 
@@ -80,7 +82,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 		}
 
 		message := slack.MsgOptionAttachments(attachment)
-		channelID, timestamp, err := api.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
+		channelID, timestamp, err := ic.client.PostMessage(payload.Channel.ID, slack.MsgOptionText("I'll show you Hello world code!", false), message)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			return
@@ -112,7 +114,7 @@ func (ic *InteractionController) InteractionHandler(w http.ResponseWriter, r *ht
 
 		}
 
-		_, _, err = api.PostMessage(payload.Channel.ID, msg)
+		_, _, err = ic.client.PostMessage(payload.Channel.ID, msg)
 		if err != nil {
 			fmt.Printf("Could not post message: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

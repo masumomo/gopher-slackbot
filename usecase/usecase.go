@@ -2,19 +2,11 @@ package usecase
 
 import (
 	"context"
-
-	"github.com/masumomo/gopher-slackbot/domain/model"
 )
 
-type EventUseCase interface {
-	SaveEvent(ctx context.Context, event *model.Event) error
-	SaveGoDoc(ctx context.Context, goDoc *model.GoDoc) error
-}
-
-type InteractionUseCase interface {
-	SaveInteraction(ctx context.Context, interaction *model.Interaction) error
-}
-
-type CommandUseCase interface {
-	SaveCommand(ctx context.Context, command *model.Command) error
+type UseCase interface {
+	SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error
+	SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error
+	SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error
+	SaveGoDoc(ctx context.Context, goDocName string, url string, createdBy string) error
 }

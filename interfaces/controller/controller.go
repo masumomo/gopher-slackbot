@@ -1,17 +1,11 @@
 package controller
 
 import (
-	"os"
-
 	md "github.com/JohannesKaufmann/html-to-markdown"
-	"github.com/slack-go/slack"
 )
 
 var (
-	api         *slack.Client
-	converter   *md.Converter
-	token       string
-	verifytoken string
+	converter *md.Converter
 )
 
 var randomMessages = []string{
@@ -23,7 +17,4 @@ var randomMessages = []string{
 
 func init() {
 	converter = md.NewConverter("", true, nil)
-	token = os.Getenv("SLACK_BOT_TOKEN")
-	verifytoken = os.Getenv("SLACK_VERIFY_TOKEN")
-	api = slack.New(token)
 }

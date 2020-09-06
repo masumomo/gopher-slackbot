@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -20,12 +19,16 @@ import (
 // EventController is controller for Slack Event
 type EventController struct {
 	eventInteractor *usecase.EventInteractor
+	client          *slack.Client
+	verifyToken     string
 }
 
 // NewEventController should be invoked in infrastructure
-func NewEventController(eu *usecase.EventInteractor) *EventController {
+func NewEventController(eu *usecase.EventInteractor, client *slack.Client, verifyToken string) *EventController {
 	return &EventController{
 		eventInteractor: eu,
+		client:          client,
+		verifyToken:     verifyToken,
 	}
 }
 
@@ -36,8 +39,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 	buf.ReadFrom(r.Body)
 	body := buf.String()
 
-	verifytoken := os.Getenv("SLACK_VERIFY_TOKEN")
-	evt, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionVerifyToken(&slackevents.TokenComparator{VerificationToken: verifytoken}))
+	evt, err := slackevents.ParseEvent(json.RawMessage(body), slackevents.OptionVerifyToken(&slackevents.TokenComparator{VerificationToken: ec.verifyToken}))
 	if err != nil {
 		fmt.Printf("Could not parse event JSON: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -64,7 +66,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 			if err != nil {
 				fmt.Printf("Could not save event: %v\n", err)
 			}
-			_, _, err = api.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
+			_, _, err = ec.client.PostMessage(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
 			if err != nil {
 				fmt.Printf("Could not post message: %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -130,7 +132,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 				if err != nil {
 					fmt.Printf("Could not save godoc: %v\n", err)
 				}
-				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
+				_, _, err := ec.client.PostMessage(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -139,7 +141,7 @@ func (ec *EventController) EventHandler(w http.ResponseWriter, r *http.Request) 
 			} else {
 				//Reply normal message
 				rand.Seed(time.Now().UnixNano())
-				_, _, err := api.PostMessage(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
+				_, _, err := ec.client.PostMessage(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
 				if err != nil {
 					fmt.Printf("Could not post message: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
