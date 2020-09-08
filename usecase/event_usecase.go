@@ -22,22 +22,22 @@ var randomMessages = []string{
 	"I don't wanna work any more",
 }
 
-type eventUseCase struct {
+type eventUsecase struct {
 	eventRepo *repository.EventRepository
 	postPres  presenter.PostPresenter
 }
 
-type EventUseCase interface {
+type EventUsecase interface {
 	SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error
 	SaveGoDoc(ctx context.Context, goDocName string, url string, createdBy string) error
 	RcvEvent(ctx context.Context, evt *slackevents.EventsAPIEvent) error
 }
 
-func NewEventUseCase(eventRepo *repository.EventRepository, eventPres presenter.PostPresenter) EventUseCase {
-	return &eventUseCase{eventRepo, eventPres}
+func NewEventUsecase(eventRepo *repository.EventRepository, eventPres presenter.PostPresenter) EventUsecase {
+	return &eventUsecase{eventRepo, eventPres}
 }
 
-func (eu *eventUseCase) SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error {
+func (eu *eventUsecase) SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error {
 	event := model.NewEvent(eventType, eventText, createdBy)
 	err := eu.eventRepo.Save(event)
 	if err != nil {
@@ -46,7 +46,7 @@ func (eu *eventUseCase) SaveEvent(ctx context.Context, eventType string, eventTe
 	return nil
 }
 
-func (eu *eventUseCase) SaveGoDoc(ctx context.Context, eventType string, eventText string, createdBy string) error {
+func (eu *eventUsecase) SaveGoDoc(ctx context.Context, eventType string, eventText string, createdBy string) error {
 	goDoc := model.NewGoDoc(eventType, eventText, createdBy)
 	err := eu.eventRepo.SaveGoDoc(goDoc)
 	if err != nil {
@@ -55,7 +55,7 @@ func (eu *eventUseCase) SaveGoDoc(ctx context.Context, eventType string, eventTe
 	return nil
 }
 
-func (eu *eventUseCase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPIEvent) error {
+func (eu *eventUsecase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPIEvent) error {
 
 	switch evt := evt.InnerEvent.Data.(type) {
 	case *slackevents.AppMentionEvent: //normal

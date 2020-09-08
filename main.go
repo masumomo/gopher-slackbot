@@ -24,8 +24,8 @@ func main() {
 	app := register.NewApp(db, client, verifytoken)
 
 	http.HandleFunc("/events", app.EventController.EventRouter)
-	http.HandleFunc("/interactions", app.InteractionController.interactionRouter)
-	http.HandleFunc("/commands", app.CommandController.commandRouter)
+	http.HandleFunc("/interactions", app.InteractionController.InteractionRouter)
+	http.HandleFunc("/commands", app.CommandController.CommandRouter)
 
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatalf("Failed to listen and serve: %+v", err)

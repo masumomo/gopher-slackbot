@@ -12,16 +12,16 @@ import (
 
 // interactionController is controller for Slack Interaction
 type interactionController struct {
-	interactionUseCase *usecase.InteractionUseCase
+	interactionUsecase usecase.InteractionUsecase
 }
 
 // InteractionController is controller for Slack Interaction
 type InteractionController interface {
-	HandleInteraction(r *http.Request)
+	HandleInteraction(r *http.Request) error
 }
 
 // NewInteractionController should be invoked in infrastructure
-func NewInteractionController(ic *usecase.InteractionUseCase) InteractionController {
+func NewInteractionController(ic usecase.InteractionUsecase) InteractionController {
 	return &interactionController{ic}
 }
 
@@ -37,6 +37,6 @@ func (ic *interactionController) HandleInteraction(r *http.Request) error {
 		return fmt.Errorf("This calback doesn't support : %v", payload.CallbackID)
 	}
 
-	ic.interactionUseCase.RcvInteraction(context.Background(), payload)
+	ic.interactionUsecase.RcvInteraction(context.Background(), &payload)
 	return nil
 }

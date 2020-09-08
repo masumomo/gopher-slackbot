@@ -10,21 +10,21 @@ import (
 	"github.com/slack-go/slack"
 )
 
-type commandUseCase struct {
+type commandUsecase struct {
 	commandRepo *repository.CommandRepository
 	postPres    presenter.PostPresenter
 }
 
-type CommandUseCase interface {
+type CommandUsecase interface {
 	SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error
 	RcvCommand(ctx context.Context, sl *slack.SlashCommand) error
 }
 
-func NewCommandUseCase(commandRepo *repository.CommandRepository, postPres presenter.PostPresenter) CommandUseCase {
-	return &commandUseCase{commandRepo, postPres}
+func NewCommandUsecase(commandRepo *repository.CommandRepository, postPres presenter.PostPresenter) CommandUsecase {
+	return &commandUsecase{commandRepo, postPres}
 }
 
-func (cu *commandUseCase) SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error {
+func (cu *commandUsecase) SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error {
 	command := model.NewCommand(commandName, commandText, createdBy)
 	err := cu.commandRepo.Save(command)
 	if err != nil {
@@ -33,7 +33,7 @@ func (cu *commandUseCase) SaveCommand(ctx context.Context, commandName string, c
 	return nil
 }
 
-func (cu *commandUseCase) RcvCommand(ctx context.Context, sl *slack.SlashCommand) error {
+func (cu *commandUsecase) RcvCommand(ctx context.Context, sl *slack.SlashCommand) error {
 	err := cu.SaveCommand(context.Background(), sl.Command, sl.Text, sl.UserID)
 	if err != nil {
 		fmt.Printf("Could not save command: %v\n", err)

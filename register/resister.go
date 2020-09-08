@@ -6,14 +6,15 @@ import (
 	"github.com/masumomo/gopher-slackbot/domain/repository"
 	"github.com/masumomo/gopher-slackbot/interfaces/controller"
 	"github.com/masumomo/gopher-slackbot/interfaces/presenter"
+	"github.com/masumomo/gopher-slackbot/usecase"
 	"github.com/slack-go/slack"
 )
 
-//App holds ServeMux and UseCase to invoke UseCase
+//App holds ServeMux and Usecase to invoke Usecase
 type App struct {
-	eventController       *controller.EventController
-	interactionController *controller.InteractionController
-	commandController     *controller.CommandController
+	EventController       controller.EventController
+	InteractionController controller.InteractionController
+	CommandController     controller.CommandController
 }
 
 //NewApp creates controller that contains repositories, presenters and usecases
@@ -28,14 +29,14 @@ func NewApp(db *sql.DB, slackClient *slack.Client, verifyToken string) *App {
 	postPres := presenter.NewPostPresenter(slackClient)
 
 	//Usecase
-	eventUseCase := usecase.NewEventUseCase(eventRepo, postPres)
-	interactionUseCase := usecase.NewInteractionUseCase(interactionRepo, postPres)
-	commandUseCase := usecase.NewCommandUseCase(commandRepo, postPres)
+	eventUsecase := usecase.NewEventUsecase(eventRepo, postPres)
+	interactionUsecase := usecase.NewInteractionUsecase(interactionRepo, postPres)
+	commandUsecase := usecase.NewCommandUsecase(commandRepo, postPres)
 
 	//Create new app
 	return &App{
-		eventController:       controller.NewEventController(eventUseCase, verifyToken),
-		interactionController: controller.NewInteractionController(interactionUseCase),
-		commandController:     controller.NewCommandController(commandUseCase),
+		EventController:       controller.NewEventController(eventUsecase, verifyToken),
+		InteractionController: controller.NewInteractionController(interactionUsecase),
+		CommandController:     controller.NewCommandController(commandUsecase),
 	}
 }

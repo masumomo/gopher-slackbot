@@ -11,7 +11,7 @@ import (
 
 // CommandController is controller for Slack Command
 type commandController struct {
-	commandUseCase *usecase.CommandUseCase
+	commandUsecase usecase.CommandUsecase
 }
 
 // CommandController is controller for Slack Command
@@ -20,7 +20,7 @@ type CommandController interface {
 }
 
 // NewCommandController should be invoked in infrastructure
-func NewCommandController(cc *usecase.CommandUseCase) CommandController {
+func NewCommandController(cc usecase.CommandUsecase) CommandController {
 	return &commandController{cc}
 }
 
@@ -30,6 +30,6 @@ func (cc *commandController) HandleCommand(r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("Could not parse slash JSON: %v", err)
 	}
-	cc.commandUseCase.RcvCommand(context.Background(), sl)
+	cc.commandUsecase.RcvCommand(context.Background(), &sl)
 	return nil
 }

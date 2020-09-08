@@ -10,21 +10,21 @@ import (
 	"github.com/slack-go/slack"
 )
 
-type interactionUseCase struct {
+type interactionUsecase struct {
 	interactionRepo *repository.InteractionRepository
 	postPres        presenter.PostPresenter
 }
 
-type InteractionUseCase interface {
+type InteractionUsecase interface {
 	SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error
 	RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error
 }
 
-func NewInteractionUseCase(interactionRepo *repository.InteractionRepository, postPres presenter.PostPresenter) InteractionUseCase {
-	return &interactionUseCase{interactionRepo, postPres}
+func NewInteractionUsecase(interactionRepo *repository.InteractionRepository, postPres presenter.PostPresenter) InteractionUsecase {
+	return &interactionUsecase{interactionRepo, postPres}
 }
 
-func (iu *interactionUseCase) SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error {
+func (iu *interactionUsecase) SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error {
 	interaction := model.NewInteraction(interactionType, action, createdBy)
 	err := iu.interactionRepo.Save(interaction)
 	if err != nil {
@@ -33,7 +33,7 @@ func (iu *interactionUseCase) SaveInteraction(ctx context.Context, interactionTy
 	return nil
 }
 
-func (iu *interactionUseCase) RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error {
+func (iu *interactionUsecase) RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error {
 
 	err := iu.SaveInteraction(context.Background(), string(payload.Type), payload.ActionID, payload.User.ID)
 	if err != nil {

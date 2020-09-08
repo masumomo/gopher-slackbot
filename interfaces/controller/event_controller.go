@@ -7,22 +7,23 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/masumomo/gopher-slackbot/usecase"
 	"github.com/slack-go/slack/slackevents"
 )
 
 // EventController is controller for Slack Event
 type eventController struct {
-	eventUsecase *usecase.eventUsecase
+	eventUsecase usecase.EventUsecase
 	verifyToken  string
 }
 
 // EventController is interface for Slack Event
 type EventController interface {
-	HandleEvent(r *http.Request)
+	HandleEvent(r *http.Request) error
 }
 
 // NewEventController should be invoked in infrastructure
-func NewEventController(eu *usecase.eventUsecase, verifyToken string) EventController {
+func NewEventController(eu usecase.EventUsecase, verifyToken string) EventController {
 	return &eventController{eu, verifyToken}
 }
 
@@ -44,10 +45,10 @@ func (ec *eventController) HandleEvent(r *http.Request) error {
 		if err != nil {
 			return fmt.Errorf("Could not parse event response JSON: %v", err)
 		}
-		w.Header().Set("Content-Type", "text")
-		w.Write([]byte(r.Challenge))
+		// w.Header().Set("Content-Type", "text")
+		// w.Write([]byte(r.Challenge))
 	}
 
-	ec.eventUsecase.RcvInteraction(context.Background(), evt)
+	ec.eventUsecase.RcvEvent(context.Background(), &evt)
 	return nil
 }
