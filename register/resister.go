@@ -12,13 +12,14 @@ import (
 
 //App holds ServeMux and Usecase to invoke Usecase
 type App struct {
+	Port                  string
 	EventController       controller.EventController
 	InteractionController controller.InteractionController
 	CommandController     controller.CommandController
 }
 
 //NewApp creates controller that contains repositories, presenters and usecases
-func NewApp(db *sql.DB, slackClient *slack.Client, verifyToken string) *App {
+func NewApp(db *sql.DB, port string, slackClient *slack.Client, verifyToken string) *App {
 
 	// Repository
 	eventRepo := repository.NewEventRepository(db)
@@ -35,6 +36,7 @@ func NewApp(db *sql.DB, slackClient *slack.Client, verifyToken string) *App {
 
 	//Create new app
 	return &App{
+		Port:                  port,
 		EventController:       controller.NewEventController(eventUsecase, verifyToken),
 		InteractionController: controller.NewInteractionController(interactionUsecase),
 		CommandController:     controller.NewCommandController(commandUsecase),
