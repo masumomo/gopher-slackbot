@@ -2,48 +2,48 @@ package presenter
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/masumomo/gopher-slackbot/usecase"
 	"github.com/slack-go/slack"
 )
 
-// PostPresenter is controller for Slack Post
-type PostPresenter struct {
-	commandUseCase *usecase.PostUseCase
-	client         *slack.Client
+// postPresenter is presenter for Slack Post
+type postPresenter struct {
+	client *slack.Client
+}
+
+// PostPresenter is a interface
+type PostPresenter interface {
+	PostMsg(channelID string, msg ...slack.MsgOption) error
+	PostBroadCastMsg(msg ...slack.MsgOption) error
 }
 
 // NewPostPresenter should be invoked in infrastructure
-func NewPostPresenter(ci *usecase.PostUseCase, client *slack.Client) *PostPresenter {
-	return &PostPresenter{ci, client}
+func NewPostPresenter(client *slack.Client) PostPresenter {
+	return &postPresenter{client}
 }
 
-//PostEcho is slash command for `/echo`
-func (pp *PostPresenter) PostMsg(channelID, msg *slack.MsgOption) error {
-	_, _, err = pp.client.PostMessage(channelID, msg)
+//PostMsg posts to a channel
+func (pp *postPresenter) PostMsg(channelID string, msgs ...slack.MsgOption) error {
+	_, _, err := pp.client.PostMessage(channelID, msgs...)
 	if err != nil {
-		errMsg := fmt.Sprintf("Could not parse slash command JSON: %v\n", err)
-		fmt.Println(errMsg)
-		return error.New(errMsg)
+		return fmt.Errorf("Could not parse slash command JSON: %v", err)
 	}
 	return nil
 }
 
-//PostBroadCastMsg is post to slack`
-func (pp *PostPresenter) PostBroadCastMsg(msg *slack.MsgOption) error {
+//PostBroadCastMsg post to all channel
+func (pp *postPresenter) PostBroadCastMsg(msgs ...slack.MsgOption) error {
 	params := slack.GetConversationsParameters{}
-	channels, _, err := cp.client.GetConversations(&params)
+	channels, _, err := pp.client.GetConversations(&params)
 	if err != nil {
-		fmt.Printf("GetConversationsParameters %s\n", err)
-		return
+		return fmt.Errorf("GetConversationsParameters %s", err)
 	}
 	for _, channel := range channels {
 		fmt.Printf("Post message to : %v\n", channel.Name)
-		_, _, err = cp.client.PostMessage(channel.ID, msg)
+		_, _, err = pp.client.PostMessage(channel.ID, msgs...)
 		if err != nil && err.Error() != "not_in_channel" { // Ignore only this err
-			fmt.Printf("Could not post message: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return fmt.Errorf("Could not post message: %v", err)
 		}
 	}
+	return nil
 }
