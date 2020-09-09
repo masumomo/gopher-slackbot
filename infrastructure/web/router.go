@@ -38,9 +38,9 @@ func newCommandRouter(cc controller.CommandController) func(w http.ResponseWrite
 }
 
 func NewRouter(app *register.App) {
-	http.HandleFunc("/commands", newCommandRouter(app.CommandController))
+	http.HandleFunc("/commands", newEventRouter(app.EventController))
 	http.HandleFunc("/events", newCommandRouter(app.CommandController))
-	http.HandleFunc("/interactions", newCommandRouter(app.CommandController))
+	http.HandleFunc("/interactions", newInteractionRouter(app.InteractionController))
 	if err := http.ListenAndServe(":"+app.Port, nil); err != nil {
 		log.Fatal(err.Error())
 	}
