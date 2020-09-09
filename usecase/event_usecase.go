@@ -23,11 +23,13 @@ var randomMessages = []string{
 	"I don't wanna work any more",
 }
 
+// commandUsecase holds event repository and post presenter
 type eventUsecase struct {
 	eventRepo *repository.EventRepository
 	postPres  presenter.PostPresenter
 }
 
+// EventUsecase is usecase for slack event
 type EventUsecase interface {
 	SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error
 	SaveGoDoc(ctx context.Context, goDocName string, url string, createdBy string) error

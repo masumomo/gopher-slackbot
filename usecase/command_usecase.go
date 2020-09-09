@@ -11,11 +11,13 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// commandUsecase holds event repository and post presenter
 type commandUsecase struct {
 	commandRepo *repository.CommandRepository
 	postPres    presenter.PostPresenter
 }
 
+// CommandUsecase is usecase for slack command
 type CommandUsecase interface {
 	SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error
 	RcvCommand(ctx context.Context, sl *slack.SlashCommand) error

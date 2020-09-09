@@ -11,11 +11,13 @@ import (
 	"github.com/slack-go/slack"
 )
 
+// interactionUsecase holds interaction repository and post presenter
 type interactionUsecase struct {
 	interactionRepo *repository.InteractionRepository
 	postPres        presenter.PostPresenter
 }
 
+// InteractionUsecase is usecase for slack interaction
 type InteractionUsecase interface {
 	SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error
 	RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error
