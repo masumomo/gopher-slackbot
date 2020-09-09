@@ -21,10 +21,12 @@ type CommandUsecase interface {
 	RcvCommand(ctx context.Context, sl *slack.SlashCommand) error
 }
 
+// NewCommandUsecase returns Command usecase usecase
 func NewCommandUsecase(commandRepo *repository.CommandRepository, postPres presenter.PostPresenter) CommandUsecase {
 	return &commandUsecase{commandRepo, postPres}
 }
 
+// SaveCommand saves Command model
 func (cu *commandUsecase) SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error {
 	command := model.NewCommand(commandName, commandText, createdBy)
 	log.Println("Save command :", command)
@@ -35,11 +37,12 @@ func (cu *commandUsecase) SaveCommand(ctx context.Context, commandName string, c
 	return nil
 }
 
+// RcvCommand is for slack slash command
 func (cu *commandUsecase) RcvCommand(ctx context.Context, sl *slack.SlashCommand) error {
 
 	err := cu.SaveCommand(context.Background(), sl.Command, sl.Text, sl.UserID)
 	if err != nil {
-		fmt.Printf("Could not save command: %v\n", err)
+		log.Printf("Could not save command: %v\n", err)
 	}
 	switch sl.Command {
 	case "/echo":

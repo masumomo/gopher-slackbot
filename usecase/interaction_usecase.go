@@ -21,10 +21,12 @@ type InteractionUsecase interface {
 	RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error
 }
 
+// NewInteractionUsecase returns Interaction usecase usecase
 func NewInteractionUsecase(interactionRepo *repository.InteractionRepository, postPres presenter.PostPresenter) InteractionUsecase {
 	return &interactionUsecase{interactionRepo, postPres}
 }
 
+// SaveInteraction saves Interaction model
 func (iu *interactionUsecase) SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error {
 	interaction := model.NewInteraction(interactionType, action, createdBy)
 	log.Println("Save interaction :", interaction)
@@ -35,11 +37,12 @@ func (iu *interactionUsecase) SaveInteraction(ctx context.Context, interactionTy
 	return nil
 }
 
+// RcvInteraction is for slack interaction
 func (iu *interactionUsecase) RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error {
 
 	err := iu.SaveInteraction(context.Background(), string(payload.Type), payload.ActionID, payload.User.ID)
 	if err != nil {
-		fmt.Printf("Could not save interaction: %v\n", err)
+		log.Printf("Could not save interaction: %v\n", err)
 	}
 
 	if payload.Type == slack.InteractionTypeMessageAction {
@@ -83,23 +86,23 @@ func (iu *interactionUsecase) RcvInteraction(ctx context.Context, payload *slack
 
 	if payload.Type == slack.InteractionTypeInteractionMessage {
 
-		fmt.Printf("Message button pressed by user %s with value %s\n", payload.User.Name, payload.ActionCallback.AttachmentActions[0].Value)
+		log.Printf("Message button pressed by user %s with value %s\n", payload.User.Name, payload.ActionCallback.AttachmentActions[0].Value)
 		var msg slack.MsgOption
 		switch payload.ActionCallback.AttachmentActions[0].Value {
 		case "golang":
-			fmt.Println("Hello in Go: ", payload.Value)
+			log.Println("Hello in Go: ", payload.Value)
 			msg = slack.MsgOptionText("I'm grad to hear that! \n```fmt.Print(\"Hello World!\")```", false)
 		case "python":
-			fmt.Println("Hello in Python: ", payload.Value)
+			log.Println("Hello in Python: ", payload.Value)
 			msg = slack.MsgOptionText("Whhhhhhy?", false)
 		case "javascript":
-			fmt.Println("Hello in JavaScript: ", payload.Value)
+			log.Println("Hello in JavaScript: ", payload.Value)
 			msg = slack.MsgOptionText("I see.. \n```console.log(\"Hello World.\")```", false)
 		case "ruby":
-			fmt.Println("Hello in Ruby: ", payload.Value)
+			log.Println("Hello in Ruby: ", payload.Value)
 			msg = slack.MsgOptionText("Whhhhhhhhhhhhy?", false)
 		default:
-			fmt.Println("Something is wrong...: ", payload.Value)
+			log.Println("Something is wrong...: ", payload.Value)
 			msg = slack.MsgOptionText("Something is wrong...", false)
 		}
 		return iu.postPres.PostMsg(payload.Channel.ID, msg)

@@ -34,10 +34,12 @@ type EventUsecase interface {
 	RcvEvent(ctx context.Context, evt *slackevents.EventsAPIEvent) error
 }
 
+// NewEventUsecase returns Event usecase usecase
 func NewEventUsecase(eventRepo *repository.EventRepository, eventPres presenter.PostPresenter) EventUsecase {
 	return &eventUsecase{eventRepo, eventPres}
 }
 
+// SaveEvent saves Event model
 func (eu *eventUsecase) SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error {
 	event := model.NewEvent(eventType, eventText, createdBy)
 	log.Println("Save event :", event)
@@ -48,6 +50,7 @@ func (eu *eventUsecase) SaveEvent(ctx context.Context, eventType string, eventTe
 	return nil
 }
 
+// SaveGoDoc saves GoDoc model
 func (eu *eventUsecase) SaveGoDoc(ctx context.Context, eventType string, eventText string, createdBy string) error {
 	goDoc := model.NewGoDoc(eventType, eventText, createdBy)
 	log.Println("Save go doc :", goDoc)
@@ -58,19 +61,21 @@ func (eu *eventUsecase) SaveGoDoc(ctx context.Context, eventType string, eventTe
 	return nil
 }
 
+// RcvEvent is for slack event
 func (eu *eventUsecase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPIEvent) error {
-
 	switch evt := evt.InnerEvent.Data.(type) {
 	case *slackevents.AppMentionEvent: //normal
+		log.Println("Slack mention event")
 		err := eu.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
 		if err != nil {
-			fmt.Printf("Could not save event: %v\n", err)
+			log.Printf("Could not save event: %v\n", err)
 		}
 		return eu.postPres.PostMsg(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
-	case *slackevents.MessageEvent: //random
+	case *slackevents.MessageEvent: //random or go doc event
 		if evt.BotID != "" { //If it came from bot, ignore
 			return nil
 		}
+		log.Println("Slack message event(not bot)")
 		err := eu.SaveEvent(context.Background(), evt.Type, evt.Text, evt.User)
 		if err != nil {
 			return fmt.Errorf("Could not save event: %v", err)
@@ -116,7 +121,7 @@ func (eu *eventUsecase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPI
 			// refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
 			err = eu.SaveGoDoc(context.Background(), pkg+"."+f, refGolangDoc, evt.User)
 			if err != nil {
-				fmt.Printf("Could not save godoc: %v\n", err)
+				log.Printf("Could not save godoc: %v\n", err)
 			}
 			return eu.postPres.PostMsg(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
 		} else {
