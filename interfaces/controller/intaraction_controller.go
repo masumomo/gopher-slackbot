@@ -36,7 +36,7 @@ func (ic *interactionController) HandleInteraction(r *http.Request) error {
 	if payload.CallbackID != "select_hello_world" {
 		return fmt.Errorf("This calback doesn't support : %v", payload.CallbackID)
 	}
-
+	fmt.Println("Call interaction usecase with:", payload)
 	ic.interactionUsecase.RcvInteraction(context.Background(), &payload)
 	return nil
 }

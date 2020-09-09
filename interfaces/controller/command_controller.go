@@ -30,6 +30,7 @@ func (cc *commandController) HandleCommand(r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("Could not parse slash JSON: %v", err)
 	}
+	fmt.Println("Call slash command usecase with:", sl)
 	cc.commandUsecase.RcvCommand(context.Background(), &sl)
 	return nil
 }
