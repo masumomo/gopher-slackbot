@@ -10,6 +10,7 @@ import (
 
 func newEventRouter(ec controller.EventController) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Invoked Event Router")
 		if err := ec.HandleEvent(r); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -19,6 +20,7 @@ func newEventRouter(ec controller.EventController) func(w http.ResponseWriter, r
 
 func newInteractionRouter(ic controller.InteractionController) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Invoked Interaction Router")
 		if err := ic.HandleInteraction(r); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -27,6 +29,7 @@ func newInteractionRouter(ic controller.InteractionController) func(w http.Respo
 }
 func newCommandRouter(cc controller.CommandController) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Invoked Command Router")
 		if err := cc.HandleCommand(r); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

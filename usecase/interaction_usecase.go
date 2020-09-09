@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/masumomo/gopher-slackbot/domain/model"
 	"github.com/masumomo/gopher-slackbot/domain/repository"
@@ -26,6 +27,7 @@ func NewInteractionUsecase(interactionRepo *repository.InteractionRepository, po
 
 func (iu *interactionUsecase) SaveInteraction(ctx context.Context, interactionType string, action string, createdBy string) error {
 	interaction := model.NewInteraction(interactionType, action, createdBy)
+	log.Println("Save interaction :", interaction)
 	err := iu.interactionRepo.Save(interaction)
 	if err != nil {
 		return err

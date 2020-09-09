@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"regexp"
 	"strings"
@@ -39,6 +40,7 @@ func NewEventUsecase(eventRepo *repository.EventRepository, eventPres presenter.
 
 func (eu *eventUsecase) SaveEvent(ctx context.Context, eventType string, eventText string, createdBy string) error {
 	event := model.NewEvent(eventType, eventText, createdBy)
+	log.Println("Save event :", event)
 	err := eu.eventRepo.Save(event)
 	if err != nil {
 		return err
@@ -48,6 +50,7 @@ func (eu *eventUsecase) SaveEvent(ctx context.Context, eventType string, eventTe
 
 func (eu *eventUsecase) SaveGoDoc(ctx context.Context, eventType string, eventText string, createdBy string) error {
 	goDoc := model.NewGoDoc(eventType, eventText, createdBy)
+	log.Println("Save go doc :", goDoc)
 	err := eu.eventRepo.SaveGoDoc(goDoc)
 	if err != nil {
 		return err

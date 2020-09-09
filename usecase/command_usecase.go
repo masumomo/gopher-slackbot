@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/masumomo/gopher-slackbot/domain/model"
 	"github.com/masumomo/gopher-slackbot/domain/repository"
@@ -26,6 +27,7 @@ func NewCommandUsecase(commandRepo *repository.CommandRepository, postPres prese
 
 func (cu *commandUsecase) SaveCommand(ctx context.Context, commandName string, commandText string, createdBy string) error {
 	command := model.NewCommand(commandName, commandText, createdBy)
+	log.Println("Save command :", command)
 	err := cu.commandRepo.Save(command)
 	if err != nil {
 		return err
@@ -34,6 +36,7 @@ func (cu *commandUsecase) SaveCommand(ctx context.Context, commandName string, c
 }
 
 func (cu *commandUsecase) RcvCommand(ctx context.Context, sl *slack.SlashCommand) error {
+
 	err := cu.SaveCommand(context.Background(), sl.Command, sl.Text, sl.UserID)
 	if err != nil {
 		fmt.Printf("Could not save command: %v\n", err)

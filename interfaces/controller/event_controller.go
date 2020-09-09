@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/masumomo/gopher-slackbot/usecase"
@@ -49,7 +50,7 @@ func (ec *eventController) HandleEvent(r *http.Request) error {
 		// w.Write([]byte(r.Challenge))
 	}
 
-	fmt.Println("Call event usecase with:", evt)
+	log.Println("Call event usecase with:", evt)
 	ec.eventUsecase.RcvEvent(context.Background(), &evt)
 	return nil
 }
