@@ -72,7 +72,7 @@ func (eu *eventUsecase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPI
 		}
 		return eu.postPres.PostMsg(evt.Channel, slack.MsgOptionText("Yes, hello.", false))
 	case *slackevents.MessageEvent: //random or go doc event
-		if evt.BotID != "" { //If it came from bot, ignore
+		if evt.BotID != "" && evt.Text == "" { //If it came from bot or text is empty, ignore
 			return nil
 		}
 		log.Println("Slack message event(not bot)")

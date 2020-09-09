@@ -40,7 +40,7 @@ func (iu *interactionUsecase) SaveInteraction(ctx context.Context, interactionTy
 // RcvInteraction is for slack interaction
 func (iu *interactionUsecase) RcvInteraction(ctx context.Context, payload *slack.InteractionCallback) error {
 
-	err := iu.SaveInteraction(context.Background(), string(payload.Type), payload.ActionID, payload.User.ID)
+	err := iu.SaveInteraction(context.Background(), string(payload.Type), payload.CallbackID, payload.User.ID)
 	if err != nil {
 		log.Printf("Could not save interaction: %v\n", err)
 	}
