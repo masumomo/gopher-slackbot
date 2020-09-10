@@ -10,5 +10,6 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/slack-go/slack v0.6.6
+	github.com/stretchr/testify v1.4.0
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
 )
