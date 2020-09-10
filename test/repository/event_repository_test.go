@@ -8,12 +8,12 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/masumomo/gopher-slackbot/domain/model"
 	"github.com/masumomo/gopher-slackbot/domain/repository"
-	"github.com/masumomo/gopher-slackbot/mock/infrastructure/mock_datastorey"
+	"github.com/masumomo/gopher-slackbot/mock/infrastructure/mock_datastore"
 	"github.com/stretchr/testify/assert"
 )
 
 func setup(t *testing.T) (r repository.EventRepository, mock sqlmock.Sqlmock) {
-	db, mock := mock_datastorey.ConnectDB()
+	db, mock := mock_datastore.ConnectDB()
 	r := repository.NewEventRepository(db)
 	return r, mock
 }
