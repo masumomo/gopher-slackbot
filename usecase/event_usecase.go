@@ -126,12 +126,12 @@ func (eu *eventUsecase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPI
 				log.Printf("Could not save godoc: %v\n", err)
 			}
 			return eu.postPres.PostMsg(evt.Channel, slack.MsgOptionText(msg+refGolangDoc+"\n", false))
-		} else {
-			//Reply normal message
-			rand.Seed(time.Now().UnixNano())
-
-			return eu.postPres.PostMsg(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
 		}
+		//Reply normal message
+		rand.Seed(time.Now().UnixNano())
+
+		return eu.postPres.PostMsg(evt.Channel, slack.MsgOptionText(randomMessages[rand.Intn(len(randomMessages))], false))
+
 	default:
 		return fmt.Errorf("This event is not supported : %v", evt)
 	}
