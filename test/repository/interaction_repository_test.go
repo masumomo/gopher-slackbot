@@ -12,7 +12,7 @@ import (
 
 func setupInteraction(t *testing.T) (*repository.InteractionRepository, sqlmock.Sqlmock) {
 
-	db, mock := mock_datastore.ConnectDB()
+	db, mock := mock_datastore.ConnectMockDB()
 	mock.ExpectExec("CREATE TABLE IF NOT EXISTS interactions(.*)").WillReturnResult(sqlmock.NewResult(0, 0))
 	r := repository.NewInteractionRepository(db)
 	return r, mock
