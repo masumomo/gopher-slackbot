@@ -10,7 +10,7 @@ import (
 	mock_datastore "github.com/masumomo/gopher-slackbot/mock/infrastructure/datastore"
 )
 
-func setup(t *testing.T) (*repository.EventRepository, sqlmock.Sqlmock) {
+func setupEvent(t *testing.T) (*repository.EventRepository, sqlmock.Sqlmock) {
 
 	db, mock := mock_datastore.ConnectDB()
 	mock.ExpectExec("CREATE TABLE IF NOT EXISTS events(.*)").WillReturnResult(sqlmock.NewResult(0, 0))
@@ -18,7 +18,7 @@ func setup(t *testing.T) (*repository.EventRepository, sqlmock.Sqlmock) {
 	r := repository.NewEventRepository(db)
 	return r, mock
 }
-func TestSave(t *testing.T) {
+func TestSaveEvent(t *testing.T) {
 
 	evt := &model.Event{
 		EventType: "test event",
@@ -26,7 +26,7 @@ func TestSave(t *testing.T) {
 		CreatedBy: "testuserID",
 		CreatedAt: time.Now(),
 	}
-	r, mock := setup(t)
+	r, mock := setupEvent(t)
 
 	mock.ExpectExec("INSERT INTO events").WithArgs(evt.EventType, evt.Text, evt.CreatedBy, evt.CreatedAt).WillReturnResult(sqlmock.NewResult(1, 1))
 
