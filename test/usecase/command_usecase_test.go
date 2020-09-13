@@ -2,7 +2,6 @@ package usecase_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -74,13 +73,80 @@ func TestRcvEchoCommand(t *testing.T) {
 
 	// Set expected result
 	mockDB.ExpectExec("INSERT INTO commands").WithArgs(cmd.CommandName, cmd.Text, cmd.CreatedBy, test_helper.AnyTime{}).WillReturnResult(sqlmock.NewResult(1, 1))
-	mockPost.EXPECT().PostMsg(slCmd.ChannelID, slack.MsgOptionText(slCmd.Text, false)).Return(nil).Times(1)
+	mockPost.EXPECT().PostMsg(slCmd.ChannelID, gomock.AssignableToTypeOf(slack.MsgOptionText(slCmd.Text, false))).Return(nil).Times(1)
 
 	// Call actual method
 	if err := uc.RcvCommand(context.Background(), slCmd); err != nil {
 		t.Errorf("error was not expected while inserting event: %s", err)
 	}
-	fmt.Println("aaa")
+	// Check result
+	if err := mockDB.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+}
+
+func TestRcvEchoBroadcastCommand(t *testing.T) {
+
+	cmd := &model.Command{
+		CommandName: "/echo_broadcast",
+		Text:        "test text",
+		CreatedBy:   "test user id",
+		CreatedAt:   time.Now(),
+	}
+
+	slCmd := &slack.SlashCommand{
+		Command:   cmd.CommandName,
+		ChannelID: "test channel id",
+		Text:      cmd.Text,
+		UserID:    cmd.CreatedBy,
+	}
+
+	uc, mockPost, mockDB, mockCtl := setupCommand(t)
+	defer mockCtl.Finish()
+
+	// Set expected result
+	mockDB.ExpectExec("INSERT INTO commands").WithArgs(cmd.CommandName, cmd.Text, cmd.CreatedBy, test_helper.AnyTime{}).WillReturnResult(sqlmock.NewResult(1, 1))
+	mockPost.EXPECT().PostBroadCastMsg(gomock.AssignableToTypeOf(slack.MsgOptionText(slCmd.Text, false))).Return(nil).Times(1)
+
+	// Call actual method
+	if err := uc.RcvCommand(context.Background(), slCmd); err != nil {
+		t.Errorf("error was not expected while inserting event: %s", err)
+	}
+	// Check result
+	if err := mockDB.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+}
+
+func TestRcvHelloCommand(t *testing.T) {
+
+	cmd := &model.Command{
+		CommandName: "/hello",
+		Text:        "Hello, I'm so tired... whatup?",
+		CreatedBy:   "test user id",
+		CreatedAt:   time.Now(),
+	}
+
+	slCmd := &slack.SlashCommand{
+		Command:   cmd.CommandName,
+		ChannelID: "test channel id",
+		Text:      cmd.Text,
+		UserID:    cmd.CreatedBy,
+	}
+
+	uc, mockPost, mockDB, mockCtl := setupCommand(t)
+	defer mockCtl.Finish()
+
+	// Set expected result
+	mockDB.ExpectExec("INSERT INTO commands").WithArgs(cmd.CommandName, cmd.Text, cmd.CreatedBy, test_helper.AnyTime{}).WillReturnResult(sqlmock.NewResult(1, 1))
+	mockPost.EXPECT().PostMsg(slCmd.ChannelID, gomock.AssignableToTypeOf(slack.MsgOptionText(slCmd.Text, false))).Return(nil).Times(1)
+
+	// Call actual method
+	if err := uc.RcvCommand(context.Background(), slCmd); err != nil {
+		t.Errorf("error was not expected while inserting event: %s", err)
+	}
 	// Check result
 	if err := mockDB.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)

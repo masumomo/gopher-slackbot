@@ -120,7 +120,6 @@ func (eu *eventUsecase) RcvEvent(ctx context.Context, evt *slackevents.EventsAPI
 			//Look for doc
 			msg := "Thank you for asking! Here are documentation of *" + pkg + "." + f + "*\n\n"
 			refGolangDoc := "https://golang.org/pkg/" + pkg + "/#" + f
-			// refDevDoc := "https://devdocs.io/go/" + pkg + "/index#" + f
 			err = eu.SaveGoDoc(context.Background(), pkg+"."+f, refGolangDoc, evt.User)
 			if err != nil {
 				log.Printf("Could not save godoc: %v\n", err)

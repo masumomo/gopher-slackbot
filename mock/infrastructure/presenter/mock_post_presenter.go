@@ -5,9 +5,11 @@
 package mock_presenter
 
 import (
+	"fmt"
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	slack "github.com/slack-go/slack"
-	reflect "reflect"
 )
 
 // MockPostPresenter is a mock of PostPresenter interface
@@ -41,6 +43,7 @@ func (m *MockPostPresenter) PostMsg(channelID string, msg ...slack.MsgOption) er
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "PostMsg", varargs...)
+	fmt.Println("ret", ret)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
